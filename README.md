@@ -1,2 +1,3 @@
 # djist
-Django Inspired Static Templates
+
+Django-inspired static templates

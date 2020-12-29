@@ -1,0 +1,16 @@
+{ 
+	"sa_job_name": "Default",
+	"sa_output_job": "output",
+	"sa_sites": [
+		{
+			"sa_output_site": "default_site",
+			"sa_pages": [
+				{
+					"sa_output_filename": "default-output.html",
+					"sa_page_template": "data/filtertest.template",
+					"sa_page_dataset": "data/index.data.json"
+				}
+			]
+		}
+	]
+}
