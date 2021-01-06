@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from typing import List
-import assembler
 import sys
+import assembler
+import tests
 
 
 def main(argv: List[str]):
