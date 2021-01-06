@@ -114,24 +114,28 @@ class Prepper:
             token.build(token_string, verbatim, expression)
             tokens.append(token)
         return tuple(tokens)
+    
+    def split_tag(self, full_tag: str):
+        split = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', full_tag)
+        if split[0] == '{%':
+            return (split[1].lower(), ' '.join(split[2:-1]))
+        elif split[0] == '{{':
+            return ('replace', ' '.join(split[1:-1]))
 
     def tags_as_list(self, raw_template: str = ''):
         tag_list = []
-        action_tag, argument, full_tag = ('',)*3
+        action, argument, full_tag = ('',)*3
         for match in re.finditer(self.pattern('tags_list'), raw_template):
             if match.group(1):
                 full_tag = str(match.group(1))
-                action_tag = 'ignore'
-                argument = ''
+                action, argument = ('ignore', '')
             elif match.group(2):
                 full_tag = str(match.group(2))
-                action_tag = 'replace'
-                argument = ' '.join(full_tag.split()[1:-1])
+                action, argument = self.split_tag(full_tag)
             elif match.group(3):
                 full_tag = str(match.group(3))
-                action_tag = full_tag.split()[1].lower()
-                argument = ' '.join(full_tag.split()[2:-1])
-            tag_list.append((action_tag, argument, full_tag,
+                action, argument = self.split_tag(full_tag)
+            tag_list.append((action, argument, full_tag,
                              match.start(), match.end()))
         return tag_list
 
@@ -176,6 +180,7 @@ class Prepper:
 
         # Change tags into segments for processing
         while len(tag_list) > list_index:
+            # pylint: disable=unused-variable
             action_tag, argument, full_tag, tag_start, tag_end \
                 = tag_list[list_index]
             argument = self.arguments(action_tag, argument)
