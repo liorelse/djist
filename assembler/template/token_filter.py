@@ -1,17 +1,21 @@
-#!/usr/bin/env python3
-from ..generics import core
-
-
+#!/usr/bin/python3
+"""Djist: Built-in string filters
 """
-Site Assembler: Filter
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
-def add_filter(value: str, argument: str) -> str:    
+from ..generics import core
+from ..generics import date
+
+
+def add_filter(value: str, argument: str) -> str:
+    """add - Adds the argument to the value
+
+    This filter will first try to coerce both values to integers. If this
+    fails, it’ll concatenate the strings together.
+    """
     try:
         filtered_value = str(int(value) + int(argument))
     except ValueError:
@@ -22,21 +26,37 @@ def add_filter(value: str, argument: str) -> str:
 
 
 def addslashes_filter(value: str, argument: str) -> str:
+    """addslashes - Adds slashes before quotes
+
+    Useful for escaping strings in CSV, for example.
+    """
     filtered_value = value.replace("'", "\\'").replace('"', '\\"')
     return filtered_value
 
 
 def capfirst_filter(value: str, argument: str) -> str:
+    """capfirst - Capitalizes the first character of the value
+
+    First character is capitalized, while the remaining characters are left
+    as-is. If the first character is not a letter, this filter has no effect.
+    """
     filtered_value = value[0].capitalize() + value[1:]
     return filtered_value
 
 
 def capitalize_filter(value: str, argument: str) -> str:
+    """capitalize - Capitalizes the value
+
+    First character is capitalized, and remaining characters are changed to
+    lowercase.
+    """
     filtered_value = value.capitalize()
     return filtered_value
 
 
 def center_filter(value: str, argument: str) -> str:
+    """center - Centers the value in a field of a given width
+    """
     argument_list = argument.split(';', 1)
     try:
         argument_width = int(argument_list.pop(0))
@@ -51,12 +71,26 @@ def center_filter(value: str, argument: str) -> str:
 
 
 def cut_filter(value: str, argument: str) -> str:
-    filtered_value = value
+    """cut - Removes all instances of the argument from the given string
+    """
+    filtered_value = value.replace(argument, '')
     return filtered_value
 
 
 def date_filter(value: str, argument: str) -> str:
-    filtered_value = value
+    """date - Formats a date according to the given format
+
+    Default format is Django/PHP style directives. Standard Python (strftime)
+    directives are used by adding ';python' to the date format.
+
+    Example: {{ value|date:"D d M Y" }} {{ value|date:"%a, %d %b %Y;python" }}
+    """
+    argument_list = argument.split(';', 1)
+    dt_format = argument_list.pop(0)
+    format_type = 'django'
+    if core.not_empty(argument_list):
+        format_type = argument_list.pop(0)
+    filtered_value = date.format_datetime(value, dt_format, format_type)
     return filtered_value
 
 
@@ -386,12 +420,3 @@ filterselect = {
     'wordwrap': wordwrap_filter,
     'yesno': yesno_filter,
 }
-
-
-def main():
-    """ Main entry point of the app """
-
-
-if __name__ == "__main__":
-    """ This is executed when run from the command line """
-    main()
