@@ -29,10 +29,9 @@ def default_format() -> dict:
     }
 
 
-def directive_dj_py(dj_directive: str) -> str:
-    """Translate a Django format directive into a Python directive"""
-    py_directive = dj_directive
-    valid = {
+def directives_dj_py() -> dict:
+    """Django to Python directives"""
+    return {
         # Day
         'd': '%d', # Day of the month, 2 digits with leading zeros
         'j': '%-d', # Day of the month without leading zeros
@@ -78,11 +77,15 @@ def directive_dj_py(dj_directive: str) -> str:
         # Date/Time
         'c': '', # ISO 8601 format.
         'r': '', # RFC 5322 formatted date
-        'U': '%s', # Seconds since the Unix Epoch
-
+        #'U': '%s', # Seconds since the Unix Epoch
     }
-    if dj_directive in valid.keys():
-        py_directive = valid[dj_directive]
+
+
+def translate_dj_py(dj_directive: str) -> str:
+    """Translate a Django format directive into a Python directive"""
+    py_directive = dj_directive
+    if dj_directive in directives_dj_py().keys():
+        py_directive = directives_dj_py()[dj_directive]
     return py_directive
 
 
@@ -119,7 +122,7 @@ def format_datetime(dt_value: str, dt_format: str, format_type: str) -> str:
     strftime_format = ''
     if format_type.lower() == 'django':
         for token in tokens:
-            strftime_format += platform_check(directive_dj_py(token))
+            strftime_format += platform_check(translate_dj_py(token))
     elif format_type.lower() == 'python':
         for token in tokens:
             strftime_format += platform_check(token)
