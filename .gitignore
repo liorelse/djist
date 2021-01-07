@@ -52,6 +52,8 @@ coverage.xml
 .pytest_cache/
 
 # Project:
+.pylintrc
+pylintrc
 .vscode/
 output/
 data/
