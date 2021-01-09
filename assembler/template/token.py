@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Word,
                        quotedString, Group, delimitedList)
+from . import token_filter as tf
 
 """
 Module Docstring
@@ -33,6 +34,7 @@ class Token:
         self.filter_argument_value = ''
         self.filter_argument_is_literal = False
         self.filter_argument_is_name = False
+        self.filter_is_boolean = False
 
     def __str__(self):
         return str(self.__class__) + ": " + str(self.__dict__)
@@ -96,6 +98,9 @@ class Token:
             for filter in filter_list:
                 self.is_filtered_ = True
                 token_filter = filter.pop(0)[1:]
+                f_type = ''
+                if token_filter in tf.boolean_filters:
+                    f_type = 'boolean'
                 f_arg = ''
                 f_arg_type = ''
                 if filter:
@@ -105,7 +110,7 @@ class Token:
                         f_arg_type = 'literal'
                     else:
                         f_arg_type = 'name'
-                self.filter_list.append((token_filter, f_arg, f_arg_type))
+                self.filter_list.append((token_filter, f_type, f_arg, f_arg_type))
 
     def rebuild(self):
         self.build(self.token_string, self.is_verbatim_)
@@ -148,13 +153,16 @@ class Token:
 
     def load_next_filter(self):
         if self.has_next_filter():
-            f_value, f_arg_value, f_arg_type = self.filter_list.pop(0)
+            f_value, f_type, f_arg_value, f_arg_type = self.filter_list.pop(0)
             self.filter_value = f_value
             self.filter_argument_value = f_arg_value
+            if 'boolean' in f_type:
+                self.filter_is_boolean = True
             if 'literal' in f_arg_type:
                 self.filter_argument_is_literal = True
             elif 'name' in f_arg_type:
                 self.filter_argument_is_name = True
+
 
     def get_filter_value(self):
         return self.filter_value
@@ -167,3 +175,6 @@ class Token:
 
     def is_filter_argument_name(self):
         return self.filter_argument_is_name
+
+    def is_filter_boolean(self):
+        return self.filter_is_boolean
