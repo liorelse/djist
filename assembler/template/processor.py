@@ -126,13 +126,19 @@ class Processor:
                     # print(f'dict expected\nKey:
                     # {keys}\nValue: {return_value}')
                     return []
-            elif return_type.lower() in ('str'):
+            elif return_type.lower() in ('str',):
                 if isinstance(return_value, (str, int)):
                     return str(return_value)
                 else:
                     # print(f'str expected\nKey:
                     # {keys}\nValue: {return_value}')
                     return ''
+        elif not self.key_in_dataset(key) and return_type in ('str',):
+            try:
+                return str(int(key))
+            except ValueError:
+                return ''
+
 
     def update_dataset(self, newdata: dict):
         if core.not_empty(newdata):
@@ -140,17 +146,17 @@ class Processor:
             self.dataset_keyset = \
                 self.generate_dot_keys(self.get_data('copy'))
 
-    def apply_filter(self, token_value: str, filter_value: str,
-                     filter_argument: str):
+    def apply_filter(self, token_value: str or bool, filter_value: str,
+                     filter_argument: str) -> str or bool:
         filtered_value = token_value
-        filter = filter_value
+        tfilter = filter_value
         argument = filter_argument
-        if filter in tf.filterselect.keys():
-            selected_filter = tf.filterselect[filter]
+        if tfilter in tf.filterselect.keys():
+            selected_filter = tf.filterselect[tfilter]
             filtered_value = selected_filter(filtered_value, argument)
         return filtered_value
 
-    def resolve_filter(self, token, resolved_token):
+    def resolve_filter(self, token, resolved_token) -> str or bool:
         filtered_token = resolved_token
         if token.is_filtered():
             while token.has_next_filter():
@@ -162,7 +168,7 @@ class Processor:
                 elif token.is_filter_argument_name():
                     filter_argument \
                         = self.get_data('str', token.get_filter_argument())
-                filtered_token = self.apply_filter(resolved_token,
+                filtered_token = self.apply_filter(filtered_token,
                                                    filter_value,
                                                    filter_argument)
         return filtered_token
@@ -174,9 +180,9 @@ class Processor:
         if token.is_literal() or token.is_verbatim():
             resolved_token = token_value
         elif token.is_name():
-            if key_in_dataset:
+            if not token.is_expression():
                 resolved_token = self.get_data('str', token_value)
-            elif token.is_expression():
+            else:
                 if token_value.count('.') > 0:
                     try:
                         resolved_token = str(float(token_value))
@@ -185,9 +191,11 @@ class Processor:
                 else:
                     resolved_token = token_value
         resolved_token = self.resolve_filter(token, resolved_token)
-        if token.is_expression():
-            if token.is_literal() or (token.is_name() and key_in_dataset):
-                resolved_token = '"' + resolved_token + '"'
+        if isinstance(resolved_token, bool):
+            resolved_token = str(resolved_token)
+        if token.is_expression() and not token.is_filter_boolean() \
+            and (token.is_literal() or (token.is_name() and key_in_dataset)):
+            resolved_token = '"' + resolved_token + '"'
         return resolved_token
 
     def evaluate(self, expression: tuple or str, eval_dataset: dict):
