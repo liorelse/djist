@@ -95,13 +95,19 @@ def date_filter(value: str, argument: str) -> str:
 
 
 def default_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+    """default - If value evaluates to False, uses the given default
+    """
+    if value:
+        return value
+    return argument
 
 
 def default_if_none_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+    """default - If (and only if) value is None, uses the given default
+    """
+    if value is None:
+        return argument
+    return value
 
 
 def dictsort_filter(value: str, argument: str) -> str:
@@ -114,8 +120,13 @@ def dictsortreversed_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def divisibleby_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def divisibleby_filter(value: str, argument: str) -> bool:
+    """divisibleby - Returns True if the value is divisible by the argument
+    """
+    try:
+        filtered_value = int(value) % int(argument) == 0
+    except (ValueError, TypeError):
+        filtered_value = False
     return filtered_value
 
 
@@ -356,6 +367,11 @@ def wordwrap_filter(value: str, argument: str) -> str:
 def yesno_filter(value: str, argument: str) -> str:
     filtered_value = value
     return filtered_value
+
+
+boolean_filters = [
+    'divisibleby',
+]
 
 
 filterselect = {
