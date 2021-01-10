@@ -8,6 +8,7 @@ __license__ = "GPLv3"
 
 from ..generics import core
 from ..generics import date
+import html
 
 
 def add_filter(value: str, argument: str) -> str:
@@ -18,10 +19,8 @@ def add_filter(value: str, argument: str) -> str:
     """
     try:
         filtered_value = str(int(value) + int(argument))
-    except ValueError:
+    except (ValueError, TypeError):
         filtered_value = value + argument
-    except:
-        filtered_value = value
     return filtered_value
 
 
@@ -131,12 +130,22 @@ def divisibleby_filter(value: str, argument: str) -> bool:
 
 
 def escape_filter(value: str, argument: str) -> str:
-    filtered_value = value
+    """escape - Escapes a string’s HTML
+    """
+    filtered_value = core.substitute(core.esc_html(), value, True)
+    filtered_value = html.escape(filtered_value)
     return filtered_value
 
 
 def escapejs_filter(value: str, argument: str) -> str:
-    filtered_value = value
+    """escapejs - Escapes characters for use in JavaScript strings
+
+    This does not make the string safe for use in HTML or JavaScript template
+    literals, but does protect you from syntax errors when using templates to
+    generate JavaScript/JSON.
+    """
+    filtered_value = core.substitute(core.esc_js(), value, True)
+    filtered_value = core.substitute(core.esc_js(), value)
     return filtered_value
 
 
@@ -329,6 +338,13 @@ def truncatewords_html_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
+def unescape_filter(value: str, argument: str) -> str:
+    """unescape - Unescapes an escaped HTML string
+    """
+    filtered_value = html.unescape(value)
+    return filtered_value
+
+
 def unordered_list_filter(value: str, argument: str) -> str:
     filtered_value = value
     return filtered_value
@@ -427,6 +443,7 @@ filterselect = {
     'truncatechars_html': truncatechars_html_filter,
     'truncatewords': truncatewords_filter,
     'truncatewords_html': truncatewords_html_filter,
+    'unescape': unescape_filter,
     'unordered_list': unordered_list_filter,
     'upper': upper_filter,
     'urlencode': urlencode_filter,

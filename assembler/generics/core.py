@@ -40,9 +40,33 @@ def web_safe_subs():
     }
 
 
-def substitute(subs: dict, text: str):
+def esc_html():
+    return {
+        '<': '&lt;',
+        '>': '&gt;',
+        '&': '&amp;',
+        '"': '&quot;',
+        "'": '&#x27;',
+    }
+
+
+def esc_js():
+    return {
+        '<': '\\u003C',
+        '>': '\\u003E',
+        '"': '\\u0022',
+        "'": '\\u0027',
+        '\r': '\\u000D',
+        '\n': '\\u000A',
+    }
+
+
+def substitute(subs: dict, text: str, reverse: bool = False) -> str:
     for k, v in subs.items():
-        text = text.replace(k, v)
+        if reverse:
+            text = text.replace(v, k)
+        else:
+            text = text.replace(k, v)
     return text
 
 
