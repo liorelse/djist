@@ -1,17 +1,16 @@
 #!/usr/bin/python3
+"""Djist: Processor for prepped template
+"""
+__author__ = "llelse"
+__version__ = "0.1.0"
+__license__ = "GPLv3"
+
+
 from ..generics import (core, file)
 from . import context as mcontext
 from . import tag as mtag
 from . import token as mtoken
 from . import token_filter as tf
-
-"""
-Site Assembler: Processor
-"""
-
-__author__ = "llelse"
-__version__ = "0.1.0"
-__license__ = "GPLv3"
 
 
 class Processor:
@@ -102,7 +101,7 @@ class Processor:
                             return_value = return_value[step]
                         else:
                             return_value = None
-                    except:
+                    except (ValueError, TypeError):
                         break
                 else:
                     return_value = None
@@ -173,23 +172,22 @@ class Processor:
                                                    filter_argument)
         return filtered_token
 
-    def resolve_token(self, token, alternative_value: str = None):
+    def resolve_token(self, token):
         resolved_token = ''
         token_value = token.get_value()
         key_in_dataset = self.key_in_dataset(token_value)
         if token.is_literal() or token.is_verbatim():
             resolved_token = token_value
         elif token.is_name():
-            if not token.is_expression():
-                resolved_token = self.get_data('str', token_value)
+            if token.is_expression() and token.is_operator():
+                resolved_token = token_value
+            elif token.is_expression() and token_value.count('.') > 0:
+                try:
+                    resolved_token = str(float(token_value))
+                except (ValueError, TypeError):
+                    resolved_token = self.get_data('str', token_value)
             else:
-                if token_value.count('.') > 0:
-                    try:
-                        resolved_token = str(float(token_value))
-                    except:
-                        resolved_token = 'None'
-                else:
-                    resolved_token = token_value
+                resolved_token = self.get_data('str', token_value)
         resolved_token = self.resolve_filter(token, resolved_token)
         if isinstance(resolved_token, bool):
             resolved_token = str(resolved_token)
@@ -200,12 +198,12 @@ class Processor:
 
     def evaluate(self, expression: tuple or str, eval_dataset: dict):
         unpacked_expression, evaluated = (None,)*2
-        if type(expression) is tuple:
-            if type(expression[0]) is mtoken.Token:
+        if isinstance(expression, tuple):
+            if isinstance(expression[0], mtoken.Token):
                 expression = tuple(self.resolve_token(token)
                                    for token in expression)
             unpacked_expression = ' '.join(expression)
-        elif type(expression) is str:
+        elif isinstance(expression, str):
             unpacked_expression = expression
         else:
             unpacked_expression = str(expression)
@@ -216,7 +214,7 @@ class Processor:
                 evaluated = core.is_none_or_empty(evaluated)
         return evaluated
 
-    def new_context(self, template_segment: str, add_dataset: dict = {},
+    def new_context(self, template_segment: str, add_dataset: dict,
                     source: str = ''):
         newcontext = mcontext.Context(self.context_level, source)
         newcontext.set_dataset(self.get_data('copy'))
@@ -241,7 +239,7 @@ class Processor:
 
     def tag_filter(self, action: mtag.Action):
         filtered_content = self.new_context(
-            action.get_content(), source='filter')
+            action.get_content(), {}, source='filter')
         for token in action.get_argument():
             if token.is_name():
                 filter_value = token.get_value()
@@ -290,7 +288,7 @@ class Processor:
         argument, content = action.get()
         evaluated = if_eval()
         if evaluated:
-            if_result += self.new_context(content)
+            if_result += self.new_context(content, {})
         elif not evaluated and action.has_next():
             while action.has_next():
                 action.next()
@@ -298,10 +296,10 @@ class Processor:
                 if multiblock_action == 'elif':
                     evaluated = if_eval()
                     if evaluated:
-                        if_result += self.new_context(content)
+                        if_result += self.new_context(content, {})
                         break
                 elif multiblock_action == 'else':
-                    if_result += self.new_context(content)
+                    if_result += self.new_context(content, {})
                     break
         return if_result
 
@@ -351,7 +349,7 @@ class Processor:
             # Future: path lookup by keyword
             # filename = core.locate_path('dataset', filename)
             template_segment = file.file_to_str(filename)
-            return self.new_context(template_segment, source='usetemplate')
+            return self.new_context(template_segment, {}, source='usetemplate')
         return template
 
     def run(self, prepped_template: list, dataset: dict):

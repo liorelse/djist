@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
+"""Djist: Tokens used for tag arguments
+"""
+__author__ = "llelse"
+__version__ = "0.1.0"
+__license__ = "GPLv3"
+
+
 from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Word,
                        quotedString, Group, delimitedList)
 from . import token_filter as tf
 
-"""
-Module Docstring
-"""
 
-__author__ = "llelse"
-__version__ = "0.1.0"
-__license__ = "GPLv3"
+expression_operators = ['+', 'in', '/', '//', '&', '^', '~', '|', '**', 'is',
+    'not', '<<', '%', '*', '@', '-', '>>', '<', '<=', '==', '!=', '>=', '>',
+    'True', 'False']
 
 
 class Token:
@@ -22,6 +26,7 @@ class Token:
         self.is_name_ = False
         self.is_verbatim_ = False
         self.is_expression_ = False
+        self.is_operator_ = False
         # Argument
         self.has_argument_ = False
         self.argument_value = ''
@@ -83,6 +88,8 @@ class Token:
                 else:
                     if not self.is_verbatim_:
                         self.is_name_ = True
+            if self.is_expression_:
+                self.is_operator_ = self.value in expression_operators
             # Set argument
             if len(token_list) > 0:
                 self.has_argument_ = True
@@ -110,7 +117,8 @@ class Token:
                         f_arg_type = 'literal'
                     else:
                         f_arg_type = 'name'
-                self.filter_list.append((token_filter, f_type, f_arg, f_arg_type))
+                self.filter_list.append((token_filter, f_type, f_arg,
+                                         f_arg_type))
 
     def rebuild(self):
         self.build(self.token_string, self.is_verbatim_)
@@ -131,6 +139,9 @@ class Token:
 
     def is_expression(self):
         return self.is_expression_
+
+    def is_operator(self):
+        return self.is_operator_
 
     # Argument
 

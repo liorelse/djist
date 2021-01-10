@@ -1,9 +1,9 @@
 #!/usr/bin/python3
+import re
 from ..generics import core
 from . import tag as mtag
 from . import token as mtoken
-import re
-from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst,
+from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Literal,
                        quotedString, Word, CaselessKeyword, delimitedList)
 
 
@@ -82,7 +82,6 @@ class Prepper:
                 if action_tag in multiblock_tag:
                     return True
         return False
-    
 
 
 
@@ -114,13 +113,17 @@ class Prepper:
             token.build(token_string, verbatim, expression)
             tokens.append(token)
         return tuple(tokens)
-    
+
     def split_tag(self, full_tag: str):
-        split = re.split(''' (?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', full_tag)
-        if split[0] == '{%':
-            return (split[1].lower(), ' '.join(split[2:-1]))
-        elif split[0] == '{{':
-            return ('replace', ' '.join(split[1:-1]))
+        decon_match = mtag.match_tag()['deconstruct']
+        decon_tag = decon_match.parseString(full_tag).asList()
+        tag_group = decon_tag.pop(0)
+        if tag_group == '{{' and len(decon_tag) > 0:
+            return ('replace', ' '.join(decon_tag[0:]).strip())
+        elif tag_group == '{%' and len(decon_tag) == 2:
+            return (decon_tag[0].lower(), decon_tag[1].strip())
+        elif tag_group == '{#':
+            return ('replace', ' '.join(decon_tag[1:]))
 
     def tags_as_list(self, raw_template: str = ''):
         tag_list = []

@@ -1,13 +1,28 @@
 #!/usr/bin/env python3
-from . import prepper as mprepper
-
+"""Djist: Tags and tag actions
 """
-Module Docstring
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
+
+
+from pyparsing import (alphas, MatchFirst, Word, SkipTo)
+from . import prepper as mprepper
+
+
+def tag_identifiers():
+    return {
+        'open': ['{{', '{%', '{#'],
+        'close': ['}}', '%}', '#}'],
+    }
+
+
+def match_tag():
+    return {
+        'deconstruct':
+            MatchFirst(['{{', '{%' + Word(alphas), '{#'])
+            + SkipTo(MatchFirst(tag_identifiers()['close'])),
+    }
 
 
 def valid_tags():
