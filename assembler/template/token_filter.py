@@ -159,8 +159,35 @@ def first_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def floatformat_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def floatformat_filter(value: float or str, argument: int or str = -1) -> str:
+    """floatformat -  rounds a floating-point number to the given decimal place
+
+    When used without an argument, rounds a floating-point number to one
+    decimal place – but only if there’s a decimal part to be displayed.
+    If used with a numeric integer argument, floatformat rounds a number to
+    that many decimal places.
+    Particularly useful is passing 0 (zero) as the argument which will round
+    the float to the nearest integer.
+    If the argument passed to floatformat is negative, it will round a number
+    to that many decimal places – but will not pad the return with zeros.
+    Using floatformat with no argument is equivalent to using floatformat with
+    an argument of -1.
+    """
+    if value is None or value == '':
+        value = 0.0
+    if argument is None or argument == '':
+        argument = -1
+    try:
+        value = float(value)
+        decimals = int(argument)
+        if decimals == 0 or core.sign(decimals) == 1:
+            filtered_value = f'{value:.{decimals}f}'
+        else:
+            filtered_value = round(value, abs(decimals))
+            if filtered_value == int(filtered_value):
+                filtered_value = int(filtered_value)
+    except (ValueError, TypeError):
+        filtered_value = value
     return filtered_value
 
 
