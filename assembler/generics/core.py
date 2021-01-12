@@ -25,7 +25,7 @@ def not_empty(obj):
 
 
 def is_none_or_empty(obj):
-    return is_empty(obj) and obj is not None
+    return obj is None or len(obj) == 0
 
 
 def not_none_or_empty(obj):
