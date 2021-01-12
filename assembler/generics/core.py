@@ -85,7 +85,7 @@ def web_safe_list(dirty_list: list):
 def type_match(match_object: object, match: str or tuple) -> bool:
     """Match type by string"""
     if isinstance(match, str):
-        match = tuple(match)
+        match = (match,)
     if 'any' in match:
         return True
     if 'number' in match:
