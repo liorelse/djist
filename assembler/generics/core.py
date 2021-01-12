@@ -16,6 +16,11 @@ def evaluate(exp, vars):
     # return parser.parse(exp)
 
 
+def sign(number: int or float) -> int:
+    """Returns 1 for values '> 0', and 0 for values ' <= 0'"""
+    return 1 - (number <= 0)
+
+
 def is_empty(obj):
     return len(obj) == 0
 
