@@ -80,19 +80,21 @@ class Processor:
                 return key in self.generate_dot_keys(dataset)
 
     def get_data(self, return_type: str = 'copy', key: str = '',
-                 dataset: dict = None):
-        if dataset is None:
-            return_value = self.dataset.copy()
-        else:
-            return_value = dataset.copy()
-        if return_type.lower() == 'copy':
-            return return_value
+                dataset: dict = None):
+        return_value = key
+        return_type = return_type.lower()
+        if return_type == 'copy':
+            return self.dataset.copy()
         if self.key_in_dataset(key) \
-                and return_type in ('type', 'dict', 'list', 'str'):
+                and return_type in ('type', 'any', 'dict', 'list', 'str',
+                                    'bool', 'number', 'int', 'float'):
+            if dataset is None:
+                return_value = self.dataset.copy()
+            else:
+                return_value = dataset.copy()                        
             key = key.split('.')
             for step in key:
-                if isinstance(return_value, dict) \
-                        and step in return_value.keys():
+                if isinstance(return_value, dict):
                     return_value = return_value.get(step)
                 elif isinstance(return_value, list):
                     try:
@@ -106,37 +108,34 @@ class Processor:
                 else:
                     return_value = None
                     break
-            if return_type.lower() == 'type':
-                if isinstance(return_value, dict):
-                    return 'dict'
-                elif isinstance(return_value, list):
-                    return 'list'
-            if return_type.lower() == 'dict':
-                if isinstance(return_value, dict):
+            actual_type = type(return_value)
+            if return_type == 'type':
+                return actual_type
+            elif return_type == 'any':
+                return return_value
+            elif return_type in ('dict', 'list', 'str', 'bool',
+                                'number', 'int', 'float'):
+                if core.type_match(actual_type, return_type):
                     return return_value
-                else:
-                    # print(f'dict expected\nKey:
-                    # {keys}\nValue: {return_value}')
-                    return {}
-            elif return_type.lower() == 'list':
-                if isinstance(return_value, list):
-                    return return_value
-                else:
-                    # print(f'dict expected\nKey:
-                    # {keys}\nValue: {return_value}')
-                    return []
-            elif return_type.lower() in ('str',):
-                if isinstance(return_value, (str, int)):
-                    return str(return_value)
-                else:
-                    # print(f'str expected\nKey:
-                    # {keys}\nValue: {return_value}')
-                    return ''
-        elif not self.key_in_dataset(key) and return_type in ('str',):
+                raise TypeError(f'''Expected {return_type}\r\n
+                                    Received: {actual_type}\r\n
+                                    Key: {key}\r\nValue: {return_value}\r\n''')
+            return None
+        elif not self.key_in_dataset(key):
             try:
-                return str(int(key))
+                if '.' in key:
+                    return_value = float(return_value)
+                else:
+                    return_value = int(return_value)
+                actual_type = type(return_value)
             except ValueError:
-                return ''
+                return None
+            if core.type_match(actual_type, return_type):
+                return return_value
+            elif core.type_match(str, return_type):
+                return str(return_value)
+            return None
+        return None
 
 
     def update_dataset(self, newdata: dict):
@@ -166,7 +165,7 @@ class Processor:
                     filter_argument = token.get_filter_argument()
                 elif token.is_filter_argument_name():
                     filter_argument \
-                        = self.get_data('str', token.get_filter_argument())
+                        = self.get_data('any', token.get_filter_argument())
                 filtered_token = self.apply_filter(filtered_token,
                                                    filter_value,
                                                    filter_argument)
@@ -185,9 +184,9 @@ class Processor:
                 try:
                     resolved_token = str(float(token_value))
                 except (ValueError, TypeError):
-                    resolved_token = self.get_data('str', token_value)
+                    resolved_token = self.get_data('any', token_value)
             else:
-                resolved_token = self.get_data('str', token_value)
+                resolved_token = self.get_data('any', token_value)
         resolved_token = self.resolve_filter(token, resolved_token)
         if isinstance(resolved_token, bool):
             resolved_token = str(resolved_token)
@@ -224,12 +223,17 @@ class Processor:
         del newcontext
         return context_result
 
-    def process_action(self, action: mtag.Action):
+    def process_action(self, action: mtag.Action) -> str:
         if action.get_action() in self.tagselect.keys():
             selected_tag = self.tagselect[action.get_action()]
         else:
             selected_tag = self.tag_ignore
-        return selected_tag(action)
+        processed_action = selected_tag(action)
+        try:
+            processed_action = str(processed_action)
+        except (ValueError, TypeError):
+            print('Future handler ValueError')
+        return processed_action
 
     def tag_comment(self, action: mtag.Action):
         return ''
@@ -245,7 +249,7 @@ class Processor:
                 filter_value = token.get_value()
                 filter_argument = token.get_argument()
                 if token.is_argument_name():
-                    filter_argument = self.get_data('str', filter_argument)
+                    filter_argument = self.get_data('any', filter_argument)
                 filtered_content = self.apply_filter(filtered_content,
                                                      filter_value,
                                                      filter_argument)
