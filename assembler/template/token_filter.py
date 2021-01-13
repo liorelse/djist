@@ -151,8 +151,21 @@ def escapejs_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def filesizeformat_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def filesizeformat_filter(value: int or str, argument: str) -> str:
+    """filesizeformat - Formats the value to a ‘human-readable’ file size
+    """
+    try:
+        value = int(value)
+        suffixes = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB',
+                    'PiB', 'EiB', 'ZiB', 'YiB']
+        count = 0
+        while value >= 1024 and count < len(suffixes)-1:
+            value /= 1024.
+            count += 1
+        number = f'{value:.2f}'.rstrip('0').rstrip('.')
+        filtered_value = f'{number} {suffixes[count]}'
+    except (ValueError, TypeError):
+        filtered_value = value
     return filtered_value
 
 
