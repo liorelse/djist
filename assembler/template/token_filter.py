@@ -156,8 +156,13 @@ def filesizeformat_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def first_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def first_filter(value: list, argument: str):
+    """first - Returns the first item in a list
+    """
+    if isinstance(value, (list, dict)):
+        filtered_value = value[0]
+    else:
+        filtered_value = value
     return filtered_value
 
 
