@@ -111,14 +111,20 @@ def default_if_none_filter(value: str, argument: str) -> str:
     return value
 
 
-def dictsort_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+def dictsort_filter(value: list, argument: str) -> list:
+    try:
+        return sorted(value, key=lambda arg: arg[argument])
+    except KeyError as err:
+        logging.warning(msg.FILTER_DICTSORT_WARNING, err)
+        return []
 
 
-def dictsortreversed_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+def dictsortreversed_filter(value: list, argument: str) -> list:
+    try:
+        return sorted(value, key=lambda arg: arg[argument], reverse=True)
+    except KeyError as err:
+        logging.warning(msg.FILTER_DICTSORTREVERSED_WARNING, err)
+        return []
 
 
 def divisibleby_filter(value: str, argument: str) -> bool:
