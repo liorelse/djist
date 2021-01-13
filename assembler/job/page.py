@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import logging
 from ..generics import file
 from ..template import context as c
 
@@ -14,6 +15,7 @@ __license__ = "GPLv3"
 class Page:
 
     def __init__(self, config: dict = {}):
+        logging.debug('create new page')
         self.config = config
         self.processed_template = ''
         self.page_context = c.Context(0)
@@ -55,5 +57,7 @@ class Page:
                         path_output_filename, full_path)
 
     def process(self):
+        logging.debug('start page')
         self.processed_template = self.page_context.process()
         self.write_page_to_file()
+        logging.debug('completed page')

@@ -6,6 +6,8 @@ __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
+import html
+import logging
 from ..generics import core
 from ..generics import date
 import html

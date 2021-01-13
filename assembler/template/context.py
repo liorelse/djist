@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import logging
 from ..generics import (core, file)
 from . import prepper as mprepper
 from . import processor as mprocessor
@@ -21,6 +22,8 @@ class Context:
         self.dataset = {}
         self.prepped_template = []
         self.result = ''
+        logging.debug('create new context (level: %s)', self.context_level)
+
 
     # Data
 
@@ -36,6 +39,7 @@ class Context:
         return self.prepped_template
 
     def set_template(self, raw_template):
+        logging.debug('adding template (segment) to context')
         prepper = mprepper.Prepper()
         self.prepped_template.extend(prepper.run(raw_template,
                                                  self.source_tag,
@@ -55,7 +59,9 @@ class Context:
     # Process
 
     def process(self):
+        logging.debug('start context (level: %s)', self.context_level)
         processor = mprocessor.Processor(self.context_level)
         self.result = processor.run(self.prepped_template, self.dataset)
         self.prepped_template = []
+        logging.debug('completed context (level: %s)', self.context_level)
         return self.result

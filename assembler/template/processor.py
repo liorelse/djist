@@ -6,7 +6,8 @@ __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
-from ..generics import (core, file)
+import logging
+from ..generics import (core, file, msg)
 from . import context as mcontext
 from . import tag as mtag
 from . import token as mtoken
@@ -106,6 +107,7 @@ class Processor:
                     except (ValueError, TypeError):
                         break
                 else:
+                    logging.error(msg.UNEXPECTED_TYPE, type(return_value))
                     return_value = None
                     break
             actual_type = type(return_value)
@@ -129,12 +131,13 @@ class Processor:
                     return_value = int(return_value)
                 actual_type = type(return_value)
             except ValueError:
+                logging.error(msg.PROC_GETDATA_ERROR_NONKEY, key)
                 return None
             if core.type_match(actual_type, return_type):
                 return return_value
             elif core.type_match(str, return_type):
                 return str(return_value)
-            return None
+        logging.warning(msg.PROC_GETDATA_INVALID_RETURN, return_type)
         return None
 
 
@@ -209,6 +212,9 @@ class Processor:
         if core.not_empty(unpacked_expression):
             # Future: Alternative to eval()
             evaluated = eval(unpacked_expression, eval_dataset)
+            except NameError as err:
+                logging.error(msg.EVAL_ATTEMPT, unpacked_expression)
+                logging.error(msg.EVAL_ERROR, err)
             if isinstance(evaluated, str):
                 evaluated = core.is_none_or_empty(evaluated)
         return evaluated
@@ -356,8 +362,11 @@ class Processor:
             return self.new_context(template_segment, {}, source='usetemplate')
         return template
 
-    def run(self, prepped_template: list, dataset: dict):
+    def run(self, prepped_template: list, dataset: dict) -> str:
+        logging.debug('start processing prepped template (segment)')
         self.update_dataset(dataset)
         for action in prepped_template:
             self.processed_template.append(self.process_action(action))
-        return ''.join(self.processed_template)
+        self.processed_template = ''.join(self.processed_template)
+        logging.debug('completed processing prepped template (segment)')
+        return self.processed_template

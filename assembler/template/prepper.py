@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import logging
 import re
 from ..generics import core
 from . import tag as mtag
@@ -216,8 +217,11 @@ class Prepper:
         return sliced
 
     def run(self, raw_template: str, src: str = '', src_state: list = []):
+        logging.debug('start prepping template (segment)')
         # print(tags_as_list(raw_template))
         self.tag_list = self.current_level_tags(
             self.tags_as_list(raw_template))
+        logging.debug('tags for current context: %s', len(self.tag_list))
         self.prepped_template = self.segments(self.tag_list, raw_template)
+        logging.debug('completed prepping template (segment)')
         return self.prepped_template
