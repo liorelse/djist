@@ -8,9 +8,7 @@ __license__ = "GPLv3"
 
 import html
 import logging
-from ..generics import core
-from ..generics import date
-import html
+from ..generics import (core, date, msg)
 
 
 def add_filter(value: str, argument: str) -> str:
