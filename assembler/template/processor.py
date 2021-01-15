@@ -35,6 +35,7 @@ class Processor:
             'usetemplate': self.tag_usetemplate,
         }
 
+
     def generate_dot_keys(self, obj: dict or list, current_key: str = ''):
         valid_set = set()
         if isinstance(obj, list):
@@ -54,8 +55,11 @@ class Processor:
                     valid_set.add(f'{current_key + key}.{item_index}')
                     index_added_key = f'{current_key + key}.{item_index}'
                     valid_set.add(index_added_key)
+                    if isinstance(item, (dict, list)):
                         valid_set.update(self.generate_dot_keys(
                             item, current_key + key))
+                        valid_set.update(self.generate_dot_keys(
+                            item, index_added_key))
                     item_index += 1
             # Dictionary
             elif isinstance(value, dict):
