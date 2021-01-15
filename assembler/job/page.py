@@ -1,22 +1,24 @@
 #!/usr/bin/python3
-import logging
-from ..generics import file
-from ..template import context as c
-
+"""Djist: Page
 """
-Site Assembler: Page
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
+import logging
+from ..generics import file
+from ..template import context as c
+
+
 class Page:
 
-    def __init__(self, config: dict = {}):
+    def __init__(self, config: dict = None):
         logging.debug('create new page')
-        self.config = config
+        if config:
+            self.config = config
+        else:
+            self.config = dict()
         self.processed_template = ''
         self.page_context = c.Context(0)
         # Template
