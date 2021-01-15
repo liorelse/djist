@@ -217,11 +217,11 @@ def floatformat_filter(value: float or str, argument: int or str = -1) -> str:
 
 
 def force_escape_filter(value: str, argument: str) -> str:
+    # Return to this filter with autoescape tag
     filtered_value = value
     return filtered_value
 
 
-def get_digit_filter(value: str, argument: str) -> str:
 def get_digit_filter(value: int or str, argument: int or str) -> int or str:
     """get_digit - Given a whole number, returns the requested digit
 
@@ -244,6 +244,9 @@ def get_digit_filter(value: int or str, argument: int or str) -> int or str:
 
 
 def iriencode_filter(value: str, argument: str) -> str:
+    # Low priority
+    """iriencode - 
+    """
     filtered_value = value
     return filtered_value
 
