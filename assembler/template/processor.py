@@ -52,7 +52,6 @@ class Processor:
                 valid_set.add(current_key + key)
                 item_index = 0
                 for item in value:
-                    valid_set.add(f'{current_key + key}.{item_index}')
                     index_added_key = f'{current_key + key}.{item_index}'
                     valid_set.add(index_added_key)
                     if isinstance(item, (dict, list)):
@@ -76,7 +75,6 @@ class Processor:
                     current_key += '.'
                 valid_set.add(current_key + key)
         return valid_set
-        # [compact_list.append(x) for x in valid_list if x not in compact_list]
 
     def key_in_dataset(self, key: str, dataset: dict = None):
         if core.not_empty(key):
@@ -105,11 +103,10 @@ class Processor:
                 elif isinstance(return_value, list):
                     try:
                         step = int(step)
-                        if step in [x for x in range(len(return_value))]:
-                            return_value = return_value[step]
-                        else:
-                            return_value = None
-                    except (ValueError, TypeError):
+                        return_value = return_value[step]
+                    except (ValueError, IndexError):
+                        logging.error(msg.INVALID_LIST_INDEX, step)
+                        return_value = None
                         break
                 else:
                     logging.error(msg.UNEXPECTED_TYPE, type(return_value))
@@ -124,9 +121,10 @@ class Processor:
                                 'number', 'int', 'float'):
                 if core.type_match(actual_type, return_type):
                     return return_value
-                raise TypeError(f'''Expected {return_type}\r\n
-                                    Received: {actual_type}\r\n
-                                    Key: {key}\r\nValue: {return_value}\r\n''')
+                logging.error(msg.UNEXPECTED_TYPE, actual_type)
+                logging.error(msg.KEY_VALUE, key, return_value)
+                return None
+            logging.warning(msg.PROC_GETDATA_INVALID_RETURN, return_type)
             return None
         elif not self.key_in_dataset(key):
             try:
@@ -140,7 +138,7 @@ class Processor:
                 return None
             if core.type_match(actual_type, return_type):
                 return return_value
-            elif core.type_match(str, return_type):
+            elif return_type == 'str':
                 return str(return_value)
         logging.warning(msg.PROC_GETDATA_INVALID_RETURN, return_type)
         return None
@@ -201,6 +199,8 @@ class Processor:
         if token.is_expression() and not token.is_filter_boolean() \
             and (token.is_literal() or (token.is_name() and key_in_dataset)):
             resolved_token = '"' + resolved_token + '"'
+        if resolved_token is None:
+            resolved_token = ''
         return resolved_token
 
     def evaluate(self, expression: tuple or str, eval_dataset: dict):
@@ -216,12 +216,13 @@ class Processor:
             unpacked_expression = str(expression)
         if core.not_empty(unpacked_expression):
             # Future: Alternative to eval()
-            evaluated = eval(unpacked_expression, eval_dataset)
+            try:
+                evaluated = eval(unpacked_expression, eval_dataset)
             except NameError as err:
                 logging.error(msg.EVAL_ATTEMPT, unpacked_expression)
                 logging.error(msg.EVAL_ERROR, err)
             if isinstance(evaluated, str):
-                evaluated = core.is_none_or_empty(evaluated)
+                evaluated = core.not_empty(evaluated)
         return evaluated
 
     def new_context(self, template_segment: str, add_dataset: dict,
