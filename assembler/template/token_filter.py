@@ -221,7 +221,17 @@ def force_escape_filter(value: str, argument: str) -> str:
 
 
 def get_digit_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def get_digit_filter(value: int or str, argument: int or str) -> int or str:
+    try:
+        number = str(value)
+        digit = int(argument)
+        number_len = len(number)
+        if number_len >= digit > 0:
+            return int(number[-digit])
+        else:
+            logging.error(msg.FILTER_GET_FILTER_ERROR, number_len, digit)
+    except ValueError as err:
+        logging.error(msg.FILTER_GET_FILTER_VALUE_ERROR, err)
     return filtered_value
 
 
