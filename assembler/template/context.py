@@ -1,16 +1,15 @@
 #!/usr/bin/python3
-import logging
-from ..generics import (core, file)
-from . import prepper as mprepper
-from . import processor as mprocessor
-
+"""Djist: Context
 """
-Site Assembler: Context
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
+
+
+import logging
+from ..generics import file
+from . import prepper as mprepper
+from . import processor as mprocessor
 
 
 class Context:
@@ -41,9 +40,7 @@ class Context:
     def set_template(self, raw_template):
         logging.debug('adding template (segment) to context')
         prepper = mprepper.Prepper()
-        self.prepped_template.extend(prepper.run(raw_template,
-                                                 self.source_tag,
-                                                 self.source_tag_state))
+        self.prepped_template.extend(prepper.run(raw_template))
         self.template_to_file()
 
     def template_to_file(self):
