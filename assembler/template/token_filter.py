@@ -158,6 +158,7 @@ def escapejs_filter(value: str, argument: str) -> str:
 def filesizeformat_filter(value: int or str, argument: str) -> str:
     """filesizeformat - Formats the value to a ‘human-readable’ file size
     """
+    # Solution by nneonneo on stackoverflow.com
     try:
         value = int(value)
         suffixes = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB',
@@ -222,6 +223,12 @@ def force_escape_filter(value: str, argument: str) -> str:
 
 def get_digit_filter(value: str, argument: str) -> str:
 def get_digit_filter(value: int or str, argument: int or str) -> int or str:
+    """get_digit - Given a whole number, returns the requested digit
+
+    Digits are counted from right to left, starting with 1. Returns the
+    original value for invalid input (if input or argument is not an integer,
+    or if argument is less than 1). Otherwise, output is always an integer.
+    """
     try:
         number = str(value)
         digit = int(argument)
@@ -232,6 +239,7 @@ def get_digit_filter(value: int or str, argument: int or str) -> int or str:
             logging.error(msg.FILTER_GET_FILTER_ERROR, number_len, digit)
     except ValueError as err:
         logging.error(msg.FILTER_GET_FILTER_VALUE_ERROR, err)
+    filtered_value = value
     return filtered_value
 
 
@@ -240,8 +248,22 @@ def iriencode_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def join_filter(value: str, argument: str) -> str:
+def join_filter(value: list or str, argument: str) -> str:
+    """join - Joins a list with a string
+
+    If the value is a string, a split character must be specific, for example:
+    {{ listof|join:"**;#" }}
+    """
     filtered_value = value
+    splitter = argument.split(';', 1)
+    joiner = splitter.pop(0)
+    try:
+        if isinstance(value, str) and core.not_empty(splitter):
+            filtered_value = filtered_value.replace(splitter[0], joiner)
+        elif isinstance(value, list):
+            filtered_value = joiner.join(value)
+    except TypeError as err:
+        logging.error(msg.FILTER_JOIN_ERROR, err)
     return filtered_value
 
 

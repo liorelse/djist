@@ -17,10 +17,12 @@ KEY_VALUE = 'Key (%s) has value (%s)'
 UNEXPECTED_TYPE = 'Unexpected data type (%s)'
 
 # Filter messages
+FILTER_GENERAL = 'Could not be applied: %s'
 FILTER_DICTSORT_WARNING = 'dictsort filter: Could not be applied. Key (%s) was not found in all list items.'
 FILTER_DICTSORTREVERSED_WARNING = 'dictsortreversed filter: Could not be applied. Key (%s) was not found in all list items.'
 FILTER_GET_FILTER_ERROR = 'get_digit filter: Could not be applied. Expected digit in range 1-%s. Invalid digit (%s) given.'
-FILTER_GET_FILTER_VALUE_ERROR = 'get_digit filter: Could not be applied: %s'
+FILTER_GET_FILTER_VALUE_ERROR = 'get_digit filter: ' + FILTER_GENERAL
+FILTER_JOIN_ERROR = 'join filter: ' + FILTER_GENERAL
 
 # Processor
 PROC_GETDATA_ERROR_NONKEY = 'Key (%s) is not in dataset, and isn\'t a number'
