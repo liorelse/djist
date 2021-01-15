@@ -52,7 +52,8 @@ class Processor:
                 item_index = 0
                 for item in value:
                     valid_set.add(f'{current_key + key}.{item_index}')
-                    if isinstance(item, (dict, list)):
+                    index_added_key = f'{current_key + key}.{item_index}'
+                    valid_set.add(index_added_key)
                         valid_set.update(self.generate_dot_keys(
                             item, current_key + key))
                     item_index += 1
