@@ -1,20 +1,18 @@
 #!/usr/bin/python3
-import logging
-import re
-from ..generics import core
-from . import tag as mtag
-from . import token as mtoken
-from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Literal,
-                       quotedString, Word, CaselessKeyword, delimitedList)
-
-
+"""Djist: Prepper
 """
-Site Assembler: Prepper
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
+
+
+import logging
+import re
+from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Word,
+                       quotedString, CaselessKeyword, delimitedList)
+from ..generics import core
+from . import tag as mtag
+from . import token as mtoken
 
 
 class Prepper:
@@ -68,7 +66,7 @@ class Prepper:
 
     def is_multiblock_tag(self, action_tag):
         return action_tag in self.multiblock_tags.keys()
-    
+
     def is_multiblock_match(self, action_tag: str, main_multiblock_tag: str):
         if not core.is_empty(main_multiblock_tag):
             return action_tag in self.multiblock_tags.get(main_multiblock_tag)
@@ -143,10 +141,12 @@ class Prepper:
                              match.start(), match.end()))
         return tag_list
 
-    def current_level_tags(self, tag_list: list = [], multiblock: str = ''):
+    def current_level_tags(self, tag_list: list = None, multiblock: str = ''):
         checked_tag_list = []
         running_level = 0
         end_tag = ''
+        if tag_list is None:
+            tag_list = list()
         if core.not_empty(multiblock):
             running_level = + 1
         for action_tag, argument, full_tag, start, end in tag_list:
@@ -216,7 +216,7 @@ class Prepper:
             list_index += 1
         return sliced
 
-    def run(self, raw_template: str, src: str = '', src_state: list = []):
+    def run(self, raw_template: str):
         logging.debug('start prepping template (segment)')
         # print(tags_as_list(raw_template))
         self.tag_list = self.current_level_tags(
