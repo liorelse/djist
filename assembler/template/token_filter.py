@@ -177,9 +177,10 @@ def filesizeformat_filter(value: int or str, argument: str) -> str:
 def first_filter(value: list, argument: str):
     """first - Returns the first item in a list
     """
-    if isinstance(value, (list, dict)):
+    try:
         filtered_value = value[0]
-    else:
+    except TypeError as err:
+        logging.error(msg.FILTER_FIRST_ERROR, err)
         filtered_value = value
     return filtered_value
 
@@ -275,8 +276,14 @@ def json_script_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def last_filter(value: str, argument: str) -> str:
-    filtered_value = value
+def last_filter(value: list, argument: str) -> str:
+    """last - Returns the last item in a list
+    """
+    try:
+        filtered_value = value[-1]
+    except TypeError as err:
+        logging.error(msg.FILTER_LAST_ERROR, err)
+        filtered_value = value
     return filtered_value
 
 
