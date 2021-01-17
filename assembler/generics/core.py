@@ -87,6 +87,11 @@ def web_safe_list(dirty_list: list):
     return safe_list
 
 
+def type_string(match_object: object) -> str:
+    """Name of type, condensed"""
+    return str(type(match_object)).replace('<class \'', '').replace('\'>', '')
+
+
 def type_match(match_object: object, match: str or tuple) -> bool:
     """Match type by string"""
     if isinstance(match, str):
@@ -96,6 +101,7 @@ def type_match(match_object: object, match: str or tuple) -> bool:
     if 'number' in match:
         match = ('int', 'float') + match
     for match_type in match:
-        if str(match_object) in f"<class '{match_type}'>":
+        if type_string(match_object) == match_type:
             return True
     return False
+        if type_string(match_object) == match_type:
