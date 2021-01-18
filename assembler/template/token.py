@@ -36,6 +36,7 @@ class Token:
         self.is_filtered_ = False
         self.filter_list = []
         self.filter_value = ''
+        self.filter_argument_list = []
         self.filter_argument_value = ''
         self.filter_argument_is_literal = False
         self.filter_argument_is_name = False
@@ -90,7 +91,7 @@ class Token:
                         self.is_name_ = True
             if self.is_expression_:
                 self.is_operator_ = self.value in expression_operators
-            # Set argument
+            # Set token argument
             if len(token_list) > 0:
                 self.has_argument_ = True
                 self.argument_value = token_list.pop(0)[1:]
@@ -102,23 +103,25 @@ class Token:
         # Set filter
         if len(match_list) > 0:
             filter_list = match_list.pop(0)
-            for filter in filter_list:
-                self.is_filtered_ = True
-                token_filter = filter.pop(0)[1:]
+            self.is_filtered_ = len(filter_list) > 0
+            for filter_ in filter_list:
+                token_filter = filter_.pop(0)[1:]
                 f_type = ''
                 if token_filter in tf.boolean_filters:
                     f_type = 'boolean'
                 f_arg = ''
                 f_arg_type = ''
-                if filter:
-                    f_arg = filter.pop(0)[1:]
+                f_arg_list = []
+                # Set filter arguments
+                for filtarg in filter_:
+                    f_arg = filtarg[1:]
                     if self.is_quoted(f_arg):
                         f_arg = self.unquote(f_arg)
                         f_arg_type = 'literal'
                     else:
                         f_arg_type = 'name'
-                self.filter_list.append((token_filter, f_type, f_arg,
-                                         f_arg_type))
+                    f_arg_list.append((f_arg, f_arg_type))
+                self.filter_list.append((token_filter, f_type, f_arg_list))
 
     def rebuild(self):
         self.build(self.token_string, self.is_verbatim_)
@@ -162,18 +165,25 @@ class Token:
     def has_next_filter(self):
         return len(self.filter_list) > 0
 
-    def load_next_filter(self):
-        if self.has_next_filter():
-            f_value, f_type, f_arg_value, f_arg_type = self.filter_list.pop(0)
-            self.filter_value = f_value
+    def has_next_filter_argument(self):
+        return len(self.filter_argument_list) > 0
+
+    def load_next_filter_argument(self):
+        if self.has_next_filter_argument():
+            f_arg_value, f_arg_type = self.filter_argument_list.pop(0)
             self.filter_argument_value = f_arg_value
-            if 'boolean' in f_type:
-                self.filter_is_boolean = True
             if 'literal' in f_arg_type:
                 self.filter_argument_is_literal = True
             elif 'name' in f_arg_type:
                 self.filter_argument_is_name = True
 
+    def load_next_filter(self):
+        if self.has_next_filter():
+            f_value, f_type, f_arg_list = self.filter_list.pop(0)
+            self.filter_value = f_value
+            self.filter_argument_list = f_arg_list
+            if 'boolean' in f_type:
+                self.filter_is_boolean = True
 
     def get_filter_value(self):
         return self.filter_value
