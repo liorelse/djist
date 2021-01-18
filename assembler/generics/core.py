@@ -104,4 +104,27 @@ def type_match(match_object: object, match: str or tuple) -> bool:
         if type_string(match_object) == match_type:
             return True
     return False
-        if type_string(match_object) == match_type:
+
+
+def index_in_list(index: int, check_list: list) -> bool:
+    length = len(check_list)
+    return -length <= index < length
+
+
+class ConsoleText:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+def bold(text_string: str) -> str:
+    return ConsoleText.BOLD + text_string + ConsoleText.END
+
+def underline(text_string: str) -> str:
+    return ConsoleText.UNDERLINE + text_string + ConsoleText.END
