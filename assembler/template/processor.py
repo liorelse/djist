@@ -151,7 +151,7 @@ class Processor:
                 self.generate_dot_keys(self.get_data('copy'))
 
     def apply_filter(self, token_value: str or bool, filter_value: str,
-                     filter_argument: str) -> str or bool:
+                     filter_argument: list) -> str or bool:
         filtered_value = token_value
         tfilter = filter_value
         argument = filter_argument
@@ -162,19 +162,24 @@ class Processor:
 
     def resolve_filter(self, token, resolved_token) -> str or bool:
         filtered_token = resolved_token
-        if token.is_filtered():
+        if token.is_filtered() and resolved_token is not None:
             while token.has_next_filter():
                 token.load_next_filter()
                 filter_value = token.get_filter_value()
-                filter_argument = token.get_filter_argument()
-                if token.is_filter_argument_literal():
-                    filter_argument = token.get_filter_argument()
-                elif token.is_filter_argument_name():
-                    filter_argument \
-                        = self.get_data('any', token.get_filter_argument())
+                filter_argument_list = []
+                filter_argument = ''
+                while token.has_next_filter_argument():
+                    token.load_next_filter_argument()
+                    #filter_argument = token.get_filter_argument()
+                    if token.is_filter_argument_literal():
+                        filter_argument = token.get_filter_argument()
+                    elif token.is_filter_argument_name():
+                        filter_argument \
+                            = self.get_data('any', token.get_filter_argument())
+                    filter_argument_list.append(filter_argument)
                 filtered_token = self.apply_filter(filtered_token,
                                                    filter_value,
-                                                   filter_argument)
+                                                   filter_argument_list)
         return filtered_token
 
     def resolve_token(self, token):
