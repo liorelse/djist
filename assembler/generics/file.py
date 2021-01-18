@@ -1,16 +1,15 @@
 #!/usr/bin/python3
-import os
-import json
-from . import core
-# from pyparsing import ParseBaseException, StringStart
-
+"""Djist: Generic file functions
 """
-Site Assembler: Generic file operations
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
+
+
+import json
+import logging
+import os
+from . import (core, msg)
 
 
 def evaluate(exp, vars):
@@ -78,7 +77,11 @@ def file_to_str(filename):
 def json_to_dict(filename):
     if os.path.isfile(filename):
         with open(filename) as json_file:
-            json_dict = json.load(json_file)
+            try:
+                json_dict = json.load(json_file)
+            except ValueError as err:
+                logging.error(msg.JSON_DECODE_ERROR, filename, err)
+                json_dict = {}
         json_file.close()
     else:
         json_dict = {}
