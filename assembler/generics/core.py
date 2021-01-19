@@ -107,8 +107,10 @@ def index_in_list(index: int, check_list: list) -> bool:
     return -length <= index < length
 
 
-def convert_str_int(input: str) -> int:
+def convert_str_int(input: str or int) -> int:
     """Convert a string (str) into a number (int)"""
+    if isinstance(input, int):
+        return input
     if input.isdigit():
         return int(input)
     return int(''.join(char for char in input if char.isdigit()))
