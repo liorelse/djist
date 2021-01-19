@@ -354,39 +354,30 @@ def linebreaksbr_filter(value: str, argument: str) -> str:
 def linenumbers_filter(value: str or list, argument: list) -> str:
     """linenumbers - Displays text with line numbers
 
-    Args (Defaults):
-        [1] ("1") - starting number for list
-        [2] ("1") - minimum spaces between symbol and text
-        [3] (".") - symbol to display after number, "" for no symbol
+    Arguments:
+        value (str, list) - value(s) to be filtered
+        argument (list) - filter arguments (defualt values)
+            :1 - starting number for list ("1")
+            :2 - minimum spaces between symbol and text ("1")
+            :3 - symbol to display after number, "" for no symbol (".")
 
     Example:
-        {{ text_list|linenumbers:"200":"4":"" }}
-        {{ text_list|linenumbers:"1":dataset_spaces:symbol }}
+        {{ textlist|linenumbers:"200":"4":"" }}
+        {{ textlist|linenumbers:"1":dataset_spaces:symbol }}
     """
+    args = resolve_arguments('linenumbers', argument)
     filtered_value = ''
-    arg_defaults = '11.'
-    args = []
-    for num in range(3):
-        if core.index_in_list(num, argument) \
-                and isinstance(argument[num], (str, int)):
-            current_arg = str(argument[num]).strip()
-            if core.is_empty(current_arg) and num != 2:
-                logging.info(msg.FILTER_LINENUMBERS_DEFAULT, (num + 1))
-                args.append(arg_defaults[num])
-            else:
-                args.append(current_arg)
-        else:
-            logging.info(msg.FILTER_LINENUMBERS_DEFAULT, (num + 1))
-            args.append(arg_defaults[num])
     lines = value
     if isinstance(value, str):
-        value = value.replace('\\n\\n', '\n\n')
-        lines = value.split('\n\n')
-    number_length = len(str(int(args[0]) + (len(lines) - 1)))
-    tab_size = number_length + len(args[2]) + int(args[1])
-    number = int(args[0])
+        value = value.replace('\\n', '\n')
+        lines = value.split('\n')
+    number = core.convert_str_int(args[0])
+    minimum_spaces = core.convert_str_int(args[1])
+    symbol = args[2]
+    number_length = len(str(number + (len(lines) - 1)))
+    tab_size = number_length + len(symbol) + minimum_spaces
     for line in lines:
-        prefix = str(number) + str(args[2])
+        prefix = str(number) + symbol
         spaces = ' '*(tab_size - len(prefix))
         filtered_value += prefix + spaces + line + '\n'
         number += 1
