@@ -112,4 +112,3 @@ def convert_str_int(input: str) -> int:
     if input.isdigit():
         return int(input)
     return int(''.join(char for char in input if char.isdigit()))
-

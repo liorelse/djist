@@ -11,6 +11,50 @@ import logging
 from ..generics import (core, date, msg)
 
 
+def arg_default_types(filter_name: str) -> list:
+    """Get default types for specific filter"""
+    return filter_defaults[filter_name][0]
+
+
+def arg_default_values(filter_name: str) -> list:
+    """Get default values for specific filter"""
+    return filter_defaults[filter_name][1]
+
+
+def arg_default_disallowed(filter_name: str) -> list:
+    """Get default values for specific filter"""
+    return filter_defaults[filter_name][2]
+
+
+def resolve_arguments(filter_name: str, argument: list) -> list:
+    """Check arguments and replace with defaults where required"""
+    types = arg_default_types(filter_name)
+    default_values = arg_default_values(filter_name)
+    disallowed_values = arg_default_disallowed(filter_name)
+    return_arguments = []
+    for index, expected_type in enumerate(types):
+        if core.index_in_list(index, argument):
+            template_value = argument[index]
+            if isinstance(template_value, expected_type):
+                if not template_value in disallowed_values[index]:
+                    return_arguments.append(template_value)
+                else:
+                    return_arguments.append(default_values[index])
+                    logging.info(msg.FILTER_DEFAULT_VALUE_INFO, filter_name,
+                                 default_values[index], (index + 1))
+            else:
+                return_arguments.append(default_values[index])
+                logging.warning(msg.FILTER_DEFAULT_TYPE_WARNING, filter_name,
+                                expected_type, type(template_value))
+                logging.info(msg.FILTER_DEFAULT_VALUE_INFO, filter_name,
+                             default_values[index], (index + 1))
+        else:
+            return_arguments.append(default_values[index])
+            logging.info(msg.FILTER_DEFAULT_VALUE_INFO, filter_name,
+                         default_values[index], (index + 1))
+    return return_arguments
+
+
 def add_filter(value: str, argument: str) -> str:
     """add - Adds the argument to the value
 
