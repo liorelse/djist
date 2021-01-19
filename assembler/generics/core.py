@@ -1,10 +1,6 @@
 #!/usr/bin/python3
-
-
+"""Djist: Generic functions
 """
-Site Assembler: Generic functions
-"""
-
 __author__ = "llelse"
 __version__ = "0.1.0"
 __license__ = "GPLv3"
@@ -111,20 +107,9 @@ def index_in_list(index: int, check_list: list) -> bool:
     return -length <= index < length
 
 
-class ConsoleText:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
+def convert_str_int(input: str) -> int:
+    """Convert a string (str) into a number (int)"""
+    if input.isdigit():
+        return int(input)
+    return int(''.join(char for char in input if char.isdigit()))
 
-def bold(text_string: str) -> str:
-    return ConsoleText.BOLD + text_string + ConsoleText.END
-
-def underline(text_string: str) -> str:
-    return ConsoleText.UNDERLINE + text_string + ConsoleText.END
