@@ -555,7 +555,7 @@ boolean_filters = [
 ]
 
 
-filterselect = {
+filter_select = {
     'add': add_filter,
     'addslashes': addslashes_filter,
     'capfirst': capfirst_filter,
@@ -617,4 +617,88 @@ filterselect = {
     'wordcount': wordcount_filter,
     'wordwrap': wordwrap_filter,
     'yesno': yesno_filter,
+}
+
+
+filter_defaults = {
+    """Default values for filter functions
+
+        Defaults (tuple):
+
+            Types (list) - List of types allowed for each argument, multiple
+                types can be contained in a tuple.
+                Example: [str, (int, float), str]
+
+            Values (list) - One default value for each argument
+                Example: ['name', 3.4, 'red']
+
+            Disallowed Values (list) - Disallowed values for each argument,
+                multiple values (or no values) can be contained in a tuple.
+                Example: ['', (1, 2.2, 5), ()]
+    """
+    'add': ([], [], []),
+    'addslashes': ([], [], []),
+    'capfirst': ([], [], []),
+    'capitalize': ([], [], []),
+    'center': ([], [], []),
+    'cut': ([], [], []),
+    'date': ([], [], []),
+    'default': ([], [], []),
+    'default_if_none': ([], [], []),
+    'dictsort': ([], [], []),
+    'dictsortreversed': ([], [], []),
+    'divisibleby': ([], [], []),
+    'escape': ([], [], []),
+    'escapejs': ([], [], []),
+    'filesizeformat': ([], [], []),
+    'first': ([], [], []),
+    'floatformat': ([], [], []),
+    'force_escape': ([], [], []),
+    'get_digit': ([], [], []),
+    'iriencode': ([], [], []),
+    'join': ([], [], []),
+    'json_script': ([], [], []),
+    'last': ([], [], []),
+    'length': ([], [], []),
+    'length_is': ([int], []),
+    'linebreaks': ([str, str], ['\n\n', '\n'], ['', '']),
+    'linebreaksbr': ([str], ['\n'], ['']),
+    'linenumbers': (
+        [(str, int), (str, int), str],
+        ['1', '1', '.'],
+        ['', '', ()]
+    ),
+    'ljust': ([], [], []),
+    'lower': ([], [], []),
+    'make_list': ([], [], []),
+    'phone2numeric': ([], [], []),
+    'pluralize': ([], [], []),
+    'post': ([], [], []),
+    'pprint': ([], [], []),
+    'pre': ([], [], []),
+    'random': ([], [], []),
+    'rjust': ([], [], []),
+    'safe': ([], [], []),
+    'safeseq': ([], [], []),
+    'slice': ([], [], []),
+    'slugify': ([], [], []),
+    'stringformat': ([], [], []),
+    'striptags': ([], [], []),
+    'time': ([], [], []),
+    'timesince': ([], [], []),
+    'timeuntil': ([], [], []),
+    'title': ([], [], []),
+    'truncatechars': ([], [], []),
+    'truncatechars_html': ([], [], []),
+    'truncatewords': ([], [], []),
+    'truncatewords_html': ([], [], []),
+    'unescape': ([], [], []),
+    'unordered_list': ([], [], []),
+    'upper': ([], [], []),
+    'urlencode': ([], [], []),
+    'urlize': ([], [], []),
+    'urlizetrunc': ([], [], []),
+    'wordcount': ([], [], []),
+    'wordwrap': ([], [], []),
+    'yesno': ([], [], []),
 }
