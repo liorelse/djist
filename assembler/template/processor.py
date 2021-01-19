@@ -155,8 +155,8 @@ class Processor:
         filtered_value = token_value
         tfilter = filter_value
         argument = filter_argument
-        if tfilter in tf.filterselect.keys():
-            selected_filter = tf.filterselect[tfilter]
+        if tfilter in tf.filter_select.keys():
+            selected_filter = tf.filter_select[tfilter]
             filtered_value = selected_filter(filtered_value, argument)
         return filtered_value
 
