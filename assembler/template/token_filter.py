@@ -45,7 +45,8 @@ def resolve_arguments(filter_name: str, argument: list) -> list:
             else:
                 return_arguments.append(default_values[index])
                 logging.warning(msg.FILTER_DEFAULT_TYPE_WARNING, filter_name,
-                                expected_type, type(template_value))
+                                core.types(expected_type),
+                                core.types(template_value))
                 logging.info(msg.FILTER_DEFAULT_VALUE_INFO, filter_name,
                              default_values[index], (index + 1))
         else:

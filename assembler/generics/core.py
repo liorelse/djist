@@ -85,7 +85,23 @@ def web_safe_list(dirty_list: list):
 
 def type_string(match_object: object) -> str:
     """Name of type, condensed"""
-    return str(type(match_object)).replace('<class \'', '').replace('\'>', '')
+    if isinstance(match_object, type):
+        replace = str(match_object)
+    else:
+        replace = str(type(match_object))
+    return replace.replace('<class \'', '').replace('\'>', '')
+
+def types(match: object or tuple) -> str:
+    """String of type(s)"""
+    return_types = ''
+    if isinstance(match, tuple):
+        separator = ''
+        for match_object in match:
+            return_types += separator + type_string(match_object)
+            separator = ', '
+    else:
+        return_types += type_string(match)
+    return return_types
 
 
 def type_match(match_object: object, match: str or tuple) -> bool:

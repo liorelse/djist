@@ -109,7 +109,8 @@ class Processor:
                         return_value = None
                         break
                 else:
-                    logging.error(msg.UNEXPECTED_TYPE, type(return_value))
+                    logging.error(msg.UNEXPECTED_TYPE,
+                                  core.types(return_value))
                     return_value = None
                     break
             actual_type = type(return_value)
