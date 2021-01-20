@@ -298,57 +298,151 @@ def iriencode_filter(value: str, argument: str) -> str:
 
 
 def join_filter(value: list or str, argument: str) -> str:
-    """join - Joins a list with a string
+    """join - Joins a list (or split string) with a specified string
 
-    If the value is a string, a split character must be specific, for example:
-    {{ listof|join:"**;#" }}
+    If the value is a string, a split character must be specified
+
+    Arguments:
+        value (str, list) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str) - joining character/string <''>
+            2 (str) - split character/string <' '>
+
+    Example:
+        {{ list|join }}
+        {{ "item1;item2"|join:", ":";" }}
     """
-    filtered_value = value
-    splitter = argument.split(';', 1)
-    joiner = splitter.pop(0)
-    try:
-        if isinstance(value, str) and core.not_empty(splitter):
-            filtered_value = filtered_value.replace(splitter[0], joiner)
-        elif isinstance(value, list):
-            filtered_value = joiner.join(value)
-    except TypeError as err:
-        logging.error(msg.FILTER_JOIN_ERROR, err)
-    return filtered_value
+    args = resolve_arguments('join', argument)
+    joiner = args[0]
+    splitter = args[1]
+    if isinstance(value, str):
+        value = value.split(splitter)
+    if isinstance(value, list):
+        return joiner.join(string for string in value
+                           if isinstance(string, str))
+    logging.warning(msg.FILTER_VALUE_TYPE_WARNING, 'join', core.types(value))
+    return None
 
 
 def json_script_filter(value: str, argument: str) -> str:
+    # Low priority
     filtered_value = value
     return filtered_value
 
 
-def last_filter(value: list, argument: str) -> str:
+def last_filter(value: list, argument: list):
     """last - Returns the last item in a list
+
+    Arguments:
+        value (str, list) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            Argument unused
+
+    Example:
+        {{ datasetlist|last }}
     """
-    try:
-        filtered_value = value[-1]
-    except TypeError as err:
-        logging.error(msg.FILTER_LAST_ERROR, err)
-        filtered_value = value
+    del argument
+    if isinstance(value, (str, list)):
+        return value[-1]
+    logging.warning(msg.FILTER_VALUE_TYPE_WARNING, 'last',
+                    core.types(value))
+    return None
+
+
+def length_filter(value: str or list or dict, argument: list) -> int:
+    """length - Returns the length of the value
+
+    This works for both strings and lists
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (int) - amount to add after determining length of value <0>
+
+    Example:
+        {{ "name"|length }}
+        {{ datastring|length:padding }}
+    """
+    args = resolve_arguments('length', argument)
+    add_number = core.convert_str_int(args[0])
+    if isinstance(value, (str, list, dict)):
+        return len(value) + add_number
+    logging.warning(msg.FILTER_VALUE_TYPE_WARNING, 'length',
+                    core.types(value))
+    return None
+
+
+def length_is_filter(value: str or list or dict, argument: list) -> bool:
+    """length_is - Checks if the length of an object matches a supplied number
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (int) - length to compare to <0>
+
+    Returns:
+        (bool) - True if the value’s length is the argument, or False otherwise
+
+    Example:
+        {% if "name"|length_is:"4" %} Length is 4 {% endif %}
+    """
+    args = resolve_arguments('length_is', argument)
+    comp = core.convert_str_int(args[0])
+    if isinstance(value, (str, list, dict)):
+        return len(value) == comp
+    logging.warning(msg.FILTER_VALUE_TYPE_WARNING, 'length_is',
+                    core.types(value))
+    return False
+
+
+def linebreaks_filter(value: str, argument: list) -> str:
+    """linebreaks - Replaces line breaks in plain text with appropriate HTML
+
+    A single newline becomes an HTML line break (<br>) and a double new line
+    followed becomes a paragraph break (</p>)
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str) - delimiter for paragraph break <double *newline*>
+            2 (str) - delimiter for line break <*newline*>
+
+    Example:
+        {{ textstring|linebreaks }}
+        {{ "Address: Street, Town, State"|linebreaks:": ":", " }}
+    """
+    args = resolve_arguments('linebreaks', argument)
+    filtered_value = ''
+    para_break = args[0]
+    line_break = args[1]
+    if para_break == '\n\n':
+        value = value.replace('\\n\\n', '\n\n')
+    paragraphs = value.split(para_break)
+    for paragraph in paragraphs:
+        filtered_value += '<p>'
+        filtered_value += linebreaksbr_filter(paragraph, [line_break])
+        filtered_value += '</p>'
     return filtered_value
 
 
-def length_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+def linebreaksbr_filter(value: str, argument: list) -> str:
+    """linebreaksbr - Converts all newlines to HTML line breaks (<br>)
 
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str) - alternative delimiter for line break <*newline*>
 
-def length_is_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
-
-
-def linebreaks_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
-
-
-def linebreaksbr_filter(value: str, argument: str) -> str:
-    filtered_value = value
+    Example:
+        {{ textstring|linebreaksbr }}
+        {{ "Address: Street, Town, State"|linebreaksbr:", " }}
+    """
+    args = resolve_arguments('linebreaksbr', argument)
+    filtered_value = ''
+    line_break = args[0]
+    if line_break == '\n':
+        value = value.replace('\\n', '\n')
+    filtered_value = value.replace(line_break, '<br>')
     return filtered_value
 
 
@@ -357,10 +451,10 @@ def linenumbers_filter(value: str or list, argument: list) -> str:
 
     Arguments:
         value (str, list) - value(s) to be filtered
-        argument (list) - filter arguments (defualt values)
-            :1 - starting number for list ("1")
-            :2 - minimum spaces between symbol and text ("1")
-            :3 - symbol to display after number, "" for no symbol (".")
+        argument (list) - filter arguments <defualt values>
+            1 (str, int) - starting number for list <"1">
+            2 (str, int) - minimum spaces between symbol and text <"1">
+            3 (str) - symbol to display after number, "" for no symbol <".">
 
     Example:
         {{ textlist|linenumbers:"200":"4":"" }}
@@ -386,6 +480,15 @@ def linenumbers_filter(value: str or list, argument: list) -> str:
 
 
 def ljust_filter(value: str, argument: str) -> str:
+    """[summary]
+
+    Args:
+        value (str): [description]
+        argument (str): [description]
+
+    Returns:
+        str: [description]
+    """
     filtered_value = value
     return filtered_value
 
@@ -553,6 +656,7 @@ def yesno_filter(value: str, argument: str) -> str:
 
 boolean_filters = [
     'divisibleby',
+    'length_is'
 ]
 
 
@@ -634,8 +738,8 @@ filter_defaults = {
                 Example: ['name', 3.4, 'red']
 
             Disallowed Values (list) - Disallowed values for each argument,
-                multiple values (or no values) can be contained in a tuple.
-                Example: ['', (1, 2.2, 5), ()]
+                values (or no values) must be contained in a tuple.
+                Example: [('',), (1, 2.2, 5), ()]
     """
     'add': ([], [], []),
     'addslashes': ([], [], []),
@@ -657,17 +761,37 @@ filter_defaults = {
     'force_escape': ([], [], []),
     'get_digit': ([], [], []),
     'iriencode': ([], [], []),
-    'join': ([], [], []),
+    'join': (
+        [(str), (str)],
+        ['', ' '],
+        [(), ('')],
+    ),
     'json_script': ([], [], []),
     'last': ([], [], []),
-    'length': ([], [], []),
-    'length_is': ([int], []),
-    'linebreaks': ([str, str], ['\n\n', '\n'], ['', '']),
-    'linebreaksbr': ([str], ['\n'], ['']),
+    'length': (
+        [(str, int)],
+        [0],
+        [()],
+    ),
+    'length_is': (
+        [(str, int)],
+        [0],
+        [()],
+    ),
+    'linebreaks': (
+        [(str), (str)],
+        ['\n\n', '\n'],
+        [('',), ('',)],
+    ),
+    'linebreaksbr': (
+        [(str)],
+        ['\n'],
+        [('',)],
+    ),
     'linenumbers': (
-        [(str, int), (str, int), str],
+        [(str, int), (str, int), (str)],
         ['1', '1', '.'],
-        ['', '', ()]
+        [('',), ('',), ()],
     ),
     'ljust': ([], [], []),
     'lower': ([], [], []),
