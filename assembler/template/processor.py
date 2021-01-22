@@ -163,7 +163,7 @@ class Processor:
 
     def resolve_filter(self, token, resolved_token) -> str or bool:
         filtered_token = resolved_token
-        if token.is_filtered() and resolved_token is not None:
+        if token.is_filtered(): #and resolved_token is not None:
             while token.has_next_filter():
                 token.load_next_filter()
                 filter_value = token.get_filter_value()
