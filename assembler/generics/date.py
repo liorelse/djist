@@ -6,10 +6,12 @@ __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
+import logging
 from platform import system
 from dateutil.parser import parse
 from pyparsing import (printables, Combine, Char, Literal, White, Word,
                        ZeroOrMore)
+from . import msg
 
 
 def platform_check(directive: str) -> str:
@@ -92,9 +94,7 @@ def translate_dj_py(dj_directive: str) -> str:
 def tokenize_format(format_string: str, format_type: str) -> list:
     """Tokenize a datetime format string"""
     tokens = []
-    if format_type.lower() == 'django':
-        tokens = list(format_string)
-    elif format_type.lower() == 'python':
+    if format_type.lower() == 'python':
         directives = 'aAwdbBmyYHIpMSfzZjUWcxX%'
         match = ZeroOrMore(
             White()
@@ -102,6 +102,8 @@ def tokenize_format(format_string: str, format_type: str) -> list:
             | Word(printables)
         )
         tokens = match.parseString(format_string).asList()
+    else:
+        tokens = list(format_string)
     return tokens
 
 
@@ -112,19 +114,23 @@ def format_datetime(dt_value: str, dt_format: str, format_type: str) -> str:
         dt_value (str): Date/time string to be formatted, e.g. '21 March, 2015'
         dt_format (str): Formatting directives, e.g. 'j-M-Y H:i:s'
         format_type (str): Type of directives, 'django' or 'python' expected
+            Unexpected format_type will be treated as 'django' format
 
     Returns:
         str: Formatted date/time string
     """
     datetime_value = parse(dt_value)
     tokens = tokenize_format(dt_format, format_type)
-    formatted_value = ''
     strftime_format = ''
-    if format_type.lower() == 'django':
-        for token in tokens:
-            strftime_format += platform_check(translate_dj_py(token))
-    elif format_type.lower() == 'python':
+    if format_type.lower() == 'python':
         for token in tokens:
             strftime_format += platform_check(token)
-    formatted_value = datetime_value.strftime(strftime_format)
-    return formatted_value
+    else:
+        for token in tokens:
+            strftime_format += platform_check(translate_dj_py(token))
+    try:
+        return datetime_value.strftime(strftime_format)
+    except ValueError:
+        logging.error(msg.DATE_FORMAT_ERROR, format_type.lower(),
+                      strftime_format)
+        return None
