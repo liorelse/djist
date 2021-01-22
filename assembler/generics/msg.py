@@ -12,6 +12,7 @@ __license__ = "GPLv3"
 GENERAL_ERROR = 'Could not complete because %s'
 EVAL_ATTEMPT = 'Tried to evaluate expression (%s)'
 EVAL_ERROR = 'Could not evaluate because %s'
+DATE_FORMAT_ERROR = 'The %s date format string (%s) is invalid'
 INDEX_OUT_OF_RANGE = 'Invalid index (%s) for list/array length (%s)'
 INVALID_DICT_KEY = 'Invalid key (%s) for dictionary/object'
 INVALID_LIST_INDEX = 'Invalid index (%s) for list/array'
@@ -21,16 +22,14 @@ UNEXPECTED_TYPE = 'Unexpected data type (%s)'
 
 # Filter messages
 FILTER_GENERAL = 'Could not be applied: %s'
-FILTER_DEFAULT_TYPE_WARNING = '%s filter: Default value used due to a type mismatch.  Expected: %s  Supplied: %s'
+FILTER_DEFAULT_TYPE_WARNING = '%s filter: Expected type (%s) but found (%s)'
 FILTER_DEFAULT_VALUE_INFO = '%s filter: Default value (%s) was used (argument %s)'
-FILTER_DICTSORT_WARNING = 'dictsort filter: Could not be applied. Key (%s) was not found in all list items.'
-FILTER_DICTSORTREVERSED_WARNING = 'dictsortreversed filter: Could not be applied. Key (%s) was not found in all list items.'
-FILTER_FIRST_ERROR = 'first filter: ' + FILTER_GENERAL
-FILTER_GET_FILTER_ERROR = 'get_digit filter: Could not be applied. Expected digit in range 1-%s. Invalid digit (%s) given.'
-FILTER_GET_FILTER_VALUE_ERROR = 'get_digit filter: ' + FILTER_GENERAL
-FILTER_JOIN_ERROR = 'join filter: ' + FILTER_GENERAL
-FILTER_LAST_ERROR = 'last filter: ' + FILTER_GENERAL
-FILTER_LENGTH_ERROR = 'length filter: Could not be applied. No length for object (%s)'
+FILTER_VALUE_TYPE_WARNING = '%s filter: Unexpected value type (%s)'
+
+FILTER_DICTSORT_ERROR = 'dictsort filter: Could not be applied. Key (%s) was not found in all list items'
+FILTER_DICTSORTREVERSED_ERROR = 'dictsortreversed filter: Could not be applied. Key (%s) was not found in all list items'
+FILTER_DIVISIBLEBY_ERROR = 'divisibleby filter: Value (%s) or argument (%s) has an unexpected zero value'
+FILTER_GET_DIGIT_ARG_ERROR = 'get_digit filter: Expected digit in range 1-%s. Invalid digit (%s) given'
 
 # Processor
 PROC_GETDATA_ERROR_NONKEY = 'Key (%s) is not in dataset, and isn\'t a number'
