@@ -17,6 +17,49 @@ def sign(number: int or float) -> int:
     return 1 - (number <= 0)
 
 
+def int_negate(number: int) -> int:
+    """Turn positive to negative integer"""
+    return number - (number * 2)
+
+
+def convert_to_int(str_: str or int) -> int:
+    """Convert a string (str) into a number (int)
+    An empty string converts to 0
+    """
+    if isinstance(str_, int):
+        return str_
+    elif isinstance(str_, float):
+        return int(str_)
+    elif isinstance(str_, str) and len(str_) > 0:
+        if str_.isdigit():
+            return int(str_)
+        joined = ''.join(char for char in str_
+                         if char.isdigit() or char in '-')
+        try:
+            return int(joined)
+        except ValueError:
+            return 0
+    return 0
+
+
+def convert_to_float(str_: str or float or int) -> float:
+    """Convert a string (str) into a number (float)
+    An empty string converts to 0
+    """
+    if isinstance(str_, float):
+        return str_
+    elif isinstance(str_, int):
+        return float(str_)
+    elif isinstance(str_, str) and len(str_) > 0:
+        joined = ''.join(char for char in str_
+                         if char.isdigit() or char in ('-', '.'))
+        try:
+            return float(joined)
+        except ValueError:
+            return 0.0
+    return 0.0
+
+
 def is_empty(obj):
     return len(obj) == 0
 
@@ -125,12 +168,3 @@ def type_match(match_object: object, match: str or tuple) -> bool:
 def index_in_list(index: int, check_list: list) -> bool:
     length = len(check_list)
     return -length <= index < length
-
-
-def convert_str_int(input: str or int) -> int:
-    """Convert a string (str) into a number (int)"""
-    if isinstance(input, int):
-        return input
-    if input.isdigit():
-        return int(input)
-    return int(''.join(char for char in input if char.isdigit()))
