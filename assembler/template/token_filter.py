@@ -65,15 +65,18 @@ def add_filter(value: str or int or float,
     this fails, it’ll concatenate the strings together.
 
     Arguments:
-        value (str, int, float) - value(s) to be filtered
+        value (str, int, float, list) - value(s) to be filtered
         argument (list) - filter arguments <defualt values>
-            1 (str, int, float) - number to add <'0'>
+            1 (str, int, float, list) - number to add <'0'>
 
     Example:
         {{ "8"|add:"2" }}
         {{ price|add:tax }}
     """
     args = resolve_arguments('add', argument)
+    types = (str, int, float, list)
+    if isinstance(value, types) and type(value) is type(args[0]):
+        return value + args[0]
     def fix(value):
         fixed = value
         if isinstance(value, str):
@@ -96,7 +99,10 @@ def add_filter(value: str or int or float,
     fixed_arg = fix(args[0])
     if isinstance(fixed_value, str) or isinstance(fixed_arg, str):
         return str(fixed_value) + str(fixed_arg)
-    return fixed_value + fixed_arg
+    try:
+        return fixed_value + fixed_arg
+    except (ValueError, TypeError) as err:
+        logging.error(msg.GENERAL_ERROR, err)
 
 
 def addslashes_filter(value: str, argument: list) -> str:
@@ -977,7 +983,7 @@ Default values for filter functions
 """
 filter_defaults = {
     'add': (
-        [(str, int, float)],
+        [(str, int, float, list)],
         ['0'],
         [('',)],
     ),
