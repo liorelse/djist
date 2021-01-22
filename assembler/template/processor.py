@@ -291,12 +291,16 @@ class Processor:
             assigner = arguments[1].get_value()
             dataset_name = arguments[2].get_value()
         if assigner == 'in' and dataset_name:
-            for_dataset = self.get_data('list', dataset_name)
-            for item in for_dataset:
-                if isinstance(item, dict):
-                    for_result += self.new_context(content,
-                                                   {loop_key: item},
-                                                   source='for')
+            for_dataset = self.resolve_token(arguments[2])
+            if isinstance(for_dataset, list):
+                try:
+                    for item in for_dataset:
+                        #if isinstance(item, (dict, list)):
+                        for_result += self.new_context(content,
+                                                        {loop_key: item},
+                                                        source='for')
+                except TypeError:
+                    logging.error(msg.UNEXPECTED_TYPE, core.types(for_dataset))
         return for_result
 
     def tag_if(self, action: mtag.Action):

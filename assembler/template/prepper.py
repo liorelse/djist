@@ -51,7 +51,7 @@ class Prepper:
             'firstof': ZeroOrMore(self.match_literal | self.match_name),
             'for': ZeroOrMore(Combine(self.match_name_w_argument)
                               + CaselessKeyword("in")
-                              + self.match_name_w_argument),
+                              + self.match_name_w_filter),
             # 'replace': MatchFirst(self.match_name_w_filter),
             'usedataset': MatchFirst(self.match_literal
                                      + ZeroOrMore(CaselessKeyword("as")
