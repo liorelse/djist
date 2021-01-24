@@ -20,6 +20,13 @@ JSON_DECODE_ERROR = 'The JSON data file (%s) contains an error: %s'
 KEY_VALUE = 'Key (%s) has value (%s)'
 UNEXPECTED_TYPE = 'Unexpected data type (%s)'
 
+# Help
+HELP_JOB = 'run a job using a config file'
+HELP_JOB_CONFIG = "job configuration file (default: 'config.json')"
+HELP_TEM_TEMPLATE = "individual template to process. a dataset should also be specified when using this option."
+HELP_TEM_DATASET = "dataset to use for individual template (default: dataset.json)"
+HELP_TEMPLATE = 'process an individual template'
+
 # Filter messages
 FILTER_GENERAL = 'Could not be applied: %s'
 FILTER_DEFAULT_TYPE_WARNING = '%s filter: Expected type (%s) but found (%s)'
