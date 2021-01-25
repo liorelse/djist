@@ -6,9 +6,6 @@ __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
-DJIST_START = None
-DJIST_STOP = None
-
 # Logging
 LOG_CONSOLE = True
 LOG_CONSOLE_LEVEL = 'info'

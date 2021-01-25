@@ -50,5 +50,4 @@ def start_logging():
 def stop_logging():
     """Shut down logging"""
     logging.info('Djist assemble finished')
-    logging.debug('Run time: %s', config.DJIST_STOP - config.DJIST_START)
     logging.shutdown()
