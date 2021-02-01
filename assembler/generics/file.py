@@ -9,6 +9,7 @@ __license__ = "GPLv3"
 import json
 import logging
 import os
+from io import TextIOWrapper
 from . import (core, msg)
 
 
@@ -80,12 +81,41 @@ def json_to_dict(filename):
             try:
                 json_dict = json.load(json_file)
             except ValueError as err:
-                logging.error(msg.JSON_DECODE_ERROR, filename, err)
+                logging.error(msg.JSON_DECODE_ERROR, f'{filename} - {err}')
                 json_dict = {}
         json_file.close()
     else:
         json_dict = {}
     return json_dict
+
+
+def read_template(file: TextIOWrapper) -> str:
+    template_str: str
+    try:
+        template_str = file.read()
+    except:
+        logging.error(msg.GENERAL_ERROR, err)
+        core.close()
+    file.close()
+    return template_str
+
+
+def read_json_dataset(file: TextIOWrapper) -> dict:
+    json_dict: dict
+    try:
+        json_dict = json.load(file)
+    except ValueError as err:
+        logging.error(msg.JSON_DECODE_ERROR, err)
+        core.close()
+    file.close()
+    return json_dict
+
+
+def open_file(file: str, mode: str) -> TextIOWrapper:
+    if os.path.isfile(file) and mode in ('r', 'a'):
+        return open(file, mode)
+    elif mode in ('w', 'x'):
+        return open(file, mode)
 
 
 def data_filename(key):
