@@ -1,14 +1,14 @@
 { 
-	"sa_job_name": "Default",
-	"sa_output_job": "output",
-	"sa_sites": [
+	"djist_job": "Default",
+	"djist_output_job": "output",
+	"djist_sites": [
 		{
-			"sa_output_site": "default_site",
-			"sa_pages": [
+			"djist_output_site": "default_site",
+			"djist_pages": [
 				{
-					"sa_output_filename": "default-output.html",
-					"sa_page_template": "data/filtertest.template",
-					"sa_page_dataset": "data/index.data.json"
+					"djist_output_filename": "default-output.html",
+					"djist_page_template": "data/filtertest.template",
+					"djist_page_dataset": "data/index.data.json"
 				}
 			]
 		}

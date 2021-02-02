@@ -58,6 +58,12 @@ def parse_argument():
         default=None,
         help=msg.HELP_SCAN_DATASET,
     )
+    parser_scan.add_argument(
+        "--output-file",
+        type=argparse.FileType("w"),
+        default=None,
+        help=msg.HELP_SCAN_OUTPUT,
+    )
 
     # run
     parser_run = subparsers.add_parser("run", help=msg.HELP_RUN)
@@ -100,11 +106,16 @@ def configure():
     conf.LOG_FILE_LEVEL = args.log_level
     conf.LOG_FILE_LOCATION = args.log_file.name
     conf.IO_LOG = args.log_file
-    if args.log_level == "quiet":
+    if conf.LOG_FILE_LEVEL == "quiet":
         conf.LOG_FILE = False
         conf.IO_LOG.close()
     else:
         conf.LOG_FILE = True
+    conf.LOG_CONSOLE_LEVEL = args.console
+    if args.console == "quiet":
+        conf.LOG_CONSOLE = False
+    else:
+        conf.LOG_CONSOLE = True
 
     # Scan
     if args.djist_mode == "scan":
@@ -114,6 +125,12 @@ def configure():
             conf.IO_DATASET = args.dataset
         else:
             conf.IO_DATASET = None
+        if args.output_file:
+            conf.IO_OUTFILE = args.output_file
+        else:
+            conf.IO_OUTFILE = None
+            conf.LOG_CONSOLE = False
+
 
     # Run
     elif args.djist_mode == "run":
