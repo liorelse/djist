@@ -10,9 +10,9 @@ from io import TextIOWrapper
 
 
 # Mode
-MODE_SCAN: bool
-MODE_RUN: bool
-MODE_JOB: bool
+MODE_SCAN: bool = False
+MODE_RUN: bool = False
+MODE_JOB: bool = False
 
 # Logging
 LOG_CONSOLE: bool

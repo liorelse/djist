@@ -13,17 +13,17 @@ from ..template import context as c
 
 
 class Page:
-
+    "Djist Page"
     def __init__(self, config: dict):
-        logging.debug('create new page')
+        logging.debug("create new page")
         self.config = config
         self.page_context = c.Context(0)
-        self.processed_template = ''
+        self.processed_template = ""
         # Template
-        self.page_template = self.read_template(self.config.get('djist_page_template'))
+        self.page_template = self.read_template(self.config.get("djist_page_template"))
         self.page_context.set_template(self.page_template)
         # Dataset
-        self.resolve_dataset(self.config.get('djist_page_dataset'))
+        self.resolve_dataset(self.config.get("djist_page_dataset"))
 
     def read_template(self, config_template: str or TextIOWrapper) -> str:
         if isinstance(config_template, TextIOWrapper):
@@ -47,26 +47,26 @@ class Page:
                 self.set_dataset(src)
 
     def write_page_to_file(self):
-        if 'djist_output_job' in self.config.keys():
-            path_output_base = self.config.get('djist_output_job')
+        if "djist_output_job" in self.config.keys():
+            path_output_base = self.config.get("djist_output_job")
         else:
-            path_output_base = ''
-        if 'djist_output_site' in self.config.keys():
-            path_output_site = self.config.get('djist_output_site')
+            path_output_base = ""
+        if "djist_output_site" in self.config.keys():
+            path_output_site = self.config.get("djist_output_site")
         else:
-            path_output_site = ''
+            path_output_site = ""
         full_path = file.path_join(path_output_base, path_output_site)
-        if 'djist_output_filename' in self.config.keys():
-            path_output_filename = self.config.get('djist_output_filename')
+        if "djist_output_filename" in self.config.keys():
+            path_output_filename = self.config.get("djist_output_filename")
         else:
-            path_output_filename = ''
+            path_output_filename = ""
         if isinstance(path_output_filename, TextIOWrapper):
-            file.write_io(path_output_filename, 'template', self.processed_template)
+            file.write_io(path_output_filename, "template", self.processed_template)
         else:
             file.write_file(self.processed_template, path_output_filename, full_path)
 
     def process(self):
-        logging.debug('start page')
+        logging.debug("start page")
         self.processed_template = self.page_context.process()
         self.write_page_to_file()
-        logging.debug('completed page')
+        logging.debug("completed page")

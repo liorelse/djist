@@ -12,24 +12,24 @@ from . import page as mpage
 
 
 class Job:
+    """Djist Job"""
 
-    def __init__(self, config: str):
-        logging.debug('create new job')
-        self.config = file.json_to_dict(config)
-        # self.output_job = self.config.get('sa_output_job')
-        self.sites = self.config.pop('sa_sites')
+    def __init__(self, config: dict):
+        logging.debug("create new job")
+        self.config = config
+        self.sites = self.config.pop("djist_sites")
 
     def run(self):
-        logging.debug('start job')
+        logging.debug("start job")
         for site in self.sites:
             if isinstance(site, str):
                 site = file.json_to_dict(site)
             site_config = {**self.config, **site}
-            pages = site_config.pop('sa_pages')
+            pages = site_config.pop("djist_pages")
             for page in pages:
                 if isinstance(page, str):
                     page = file.json_to_dict(page)
                 page_config = {**site_config, **page}
                 assemble_page = mpage.Page(page_config)
                 assemble_page.process()
-        logging.debug('completed job')
+        logging.debug("completed job")
