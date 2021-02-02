@@ -6,22 +6,53 @@ __version__ = "0.1.0"
 __license__ = "GPLv3"
 
 
-from pyparsing import (Combine, printables, ZeroOrMore, MatchFirst, Word,
-                       quotedString, Group, delimitedList)
+from pyparsing import (
+    Combine,
+    printables,
+    ZeroOrMore,
+    MatchFirst,
+    Word,
+    quotedString,
+    Group,
+    delimitedList,
+)
 from . import token_filter as tf
 
 
-expression_operators = ['+', 'in', '/', '//', '&', '^', '~', '|', '**', 'is',
-    'not', '<<', '%', '*', '@', '-', '>>', '<', '<=', '==', '!=', '>=', '>',
-    'True', 'False']
+expression_operators = [
+    "+",
+    "in",
+    "/",
+    "//",
+    "&",
+    "^",
+    "~",
+    "|",
+    "**",
+    "is",
+    "not",
+    "<<",
+    "%",
+    "*",
+    "@",
+    "-",
+    ">>",
+    "<",
+    "<=",
+    "==",
+    "!=",
+    ">=",
+    ">",
+    "True",
+    "False",
+]
 
 
 class Token:
-
     def __init__(self):
-        self.token_string = ''
+        self.token_string = ""
         # Token
-        self.value = ''
+        self.value = ""
         self.is_literal_ = False
         self.is_name_ = False
         self.is_verbatim_ = False
@@ -29,15 +60,15 @@ class Token:
         self.is_operator_ = False
         # Argument
         self.has_argument_ = False
-        self.argument_value = ''
+        self.argument_value = ""
         self.argument_is_literal = False
         self.argument_is_name = False
         # Filter
         self.is_filtered_ = False
         self.filter_list = []
-        self.filter_value = ''
+        self.filter_value = ""
         self.filter_argument_list = []
-        self.filter_argument_value = ''
+        self.filter_argument_value = ""
         self.filter_argument_is_literal = False
         self.filter_argument_is_name = False
         self.filter_is_boolean = False
@@ -46,36 +77,39 @@ class Token:
         return str(self.__class__) + ": " + str(self.__dict__)
 
     def __repr__(self):
-        return f'{self.__class__} {self.token_string}'
+        return f"{self.__class__} {self.token_string}"
 
     # Utilties
     def is_quoted(self, val: str):
-        return val[0] == val[-1] and val[0] in ('\'', '\"')
+        return val[0] == val[-1] and val[0] in ("'", '"')
 
     def unquote(self, val: str):
         return val[1:-1]
 
     # Token building
-    def build(self, token_string: str, verbatim: bool = False,
-              expression: bool = False):
+    def build(
+        self, token_string: str, verbatim: bool = False, expression: bool = False
+    ):
         self.token_string = token_string
         self.is_verbatim_ = verbatim
         self.is_expression_ = expression
 
         match_literal = quotedString
-        match_name = Word(printables, excludeChars='|:')
+        match_name = Word(printables, excludeChars="|:")
         match_argument = ZeroOrMore(
-            Combine(":" + MatchFirst(match_literal | match_name)))
-        match_filter = Group(ZeroOrMore(
-            Group(Combine("|" + match_name) + match_argument)))
-        match = (Group(match_literal + match_argument) + match_filter) \
-            | (Group(match_name + match_argument) + match_filter)
+            Combine(":" + MatchFirst(match_literal | match_name))
+        )
+        match_filter = Group(
+            ZeroOrMore(Group(Combine("|" + match_name) + match_argument))
+        )
+        match = (Group(match_literal + match_argument) + match_filter) | (
+            Group(match_name + match_argument) + match_filter
+        )
 
         if self.is_verbatim_:
             match_list = [[token_string]]
         else:
-            match_list = delimitedList(
-                match, ' ').parseString(token_string).asList()
+            match_list = delimitedList(match, " ").parseString(token_string).asList()
 
         # Set token
         if len(match_list) > 0:
@@ -106,20 +140,20 @@ class Token:
             self.is_filtered_ = len(filter_list) > 0
             for filter_ in filter_list:
                 token_filter = filter_.pop(0)[1:]
-                f_type = ''
+                f_type = ""
                 if token_filter in tf.boolean_filters:
-                    f_type = 'boolean'
-                f_arg = ''
-                f_arg_type = ''
+                    f_type = "boolean"
+                f_arg = ""
+                f_arg_type = ""
                 f_arg_list = []
                 # Set filter arguments
                 for filtarg in filter_:
                     f_arg = filtarg[1:]
                     if self.is_quoted(f_arg):
                         f_arg = self.unquote(f_arg)
-                        f_arg_type = 'literal'
+                        f_arg_type = "literal"
                     else:
-                        f_arg_type = 'name'
+                        f_arg_type = "name"
                     f_arg_list.append((f_arg, f_arg_type))
                 self.filter_list.append((token_filter, f_type, f_arg_list))
 
@@ -172,9 +206,9 @@ class Token:
         if self.has_next_filter_argument():
             f_arg_value, f_arg_type = self.filter_argument_list.pop(0)
             self.filter_argument_value = f_arg_value
-            if 'literal' in f_arg_type:
+            if "literal" in f_arg_type:
                 self.filter_argument_is_literal = True
-            elif 'name' in f_arg_type:
+            elif "name" in f_arg_type:
                 self.filter_argument_is_name = True
 
     def load_next_filter(self):
@@ -182,7 +216,7 @@ class Token:
             f_value, f_type, f_arg_list = self.filter_list.pop(0)
             self.filter_value = f_value
             self.filter_argument_list = f_arg_list
-            if 'boolean' in f_type:
+            if "boolean" in f_type:
                 self.filter_is_boolean = True
 
     def get_filter_value(self):

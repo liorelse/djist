@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from ..generics import (core, file)
+from ..generics import core, file
 from . import context as mcontext
 
 """
@@ -12,17 +12,15 @@ __license__ = "GPLv3"
 
 
 class Template:
-
     def __init__(self, config: dict = {}):
         self.config = config
-        self.processed_template = ''
+        self.processed_template = ""
         self.page_context = mcontext.Context(0)
         # Template
-        self.page_template = file.file_to_str(
-            self.config.get('sa_page_template'))
+        self.page_template = file.file_to_str(self.config.get("sa_page_template"))
         self.page_context.set_template(self.page_template)
         # Dataset
-        self.resolve_dataset(self.config.get('sa_page_dataset'))
+        self.resolve_dataset(self.config.get("sa_page_dataset"))
 
     def set_dataset(self, new_dataset: dict):
         self.page_context.set_dataset(new_dataset)
@@ -38,21 +36,20 @@ class Template:
                 self.set_dataset(src)
 
     def write_page_to_file(self):
-        if 'sa_output_job' in self.config.keys():
-            path_output_base = self.config.get('sa_output_job')
+        if "sa_output_job" in self.config.keys():
+            path_output_base = self.config.get("sa_output_job")
         else:
-            path_output_base = ''
-        if 'sa_output_site' in self.config.keys():
-            path_output_site = self.config.get('sa_output_site')
+            path_output_base = ""
+        if "sa_output_site" in self.config.keys():
+            path_output_site = self.config.get("sa_output_site")
         else:
-            path_output_site = ''
+            path_output_site = ""
         full_path = file.path_join(path_output_base, path_output_site)
-        if 'sa_output_filename' in self.config.keys():
-            path_output_filename = self.config.get('sa_output_filename')
+        if "sa_output_filename" in self.config.keys():
+            path_output_filename = self.config.get("sa_output_filename")
         else:
-            path_output_filename = ''
-        file.write_file(self.processed_template,
-                        path_output_filename, full_path)
+            path_output_filename = ""
+        file.write_file(self.processed_template, path_output_filename, full_path)
 
     def process(self):
         self.processed_template = self.page_context.process()
