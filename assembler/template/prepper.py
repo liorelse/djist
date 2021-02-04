@@ -62,6 +62,9 @@ class Prepper:
                 + self.match_name_w_filter
             ),
             # 'replace': MatchFirst(self.match_name_w_filter),
+            "use": MatchFirst(
+                self.match_name_w_filter + CaselessKeyword("as") + self.match_name
+            ),
             "usedataset": MatchFirst(
                 self.match_literal
                 + ZeroOrMore(CaselessKeyword("as") + self.match_name_w_filter)

@@ -30,6 +30,7 @@ class Processor:
             "ignore": self.tag_ignore,
             "length": self.tag_length,
             "replace": self.tag_replace,
+            "use": self.tag_use,
             "usedataset": self.tag_usedataset,
             "usetemplate": self.tag_usetemplate,
         }
@@ -355,6 +356,13 @@ class Processor:
     def tag_replace(self, action: mtag.Action):
         replace_value = self.resolve_token(action.get_argument()[0])
         return replace_value
+
+    def tag_use(self, action: mtag.Action) -> str:
+        arguments = action.get_argument()
+        source = self.resolve_token(arguments[0])
+        name = arguments[2].get_value()
+        self.update_dataset({name: source})
+        return ""
 
     def tag_usedataset(self, action: mtag.Action):
         filename = ""
