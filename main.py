@@ -18,7 +18,7 @@ def parse_argument():
     """Set up and parse the argument"""
     msg = assembler.generics.msg
 
-    # top level
+    # Top level
     parser = argparse.ArgumentParser(
         prog="djist", formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -45,7 +45,7 @@ def parse_argument():
     )
     subparsers = parser.add_subparsers(dest="djist_mode")
 
-    # scan
+    # Scan
     parser_scan = subparsers.add_parser("scan", help=msg.HELP_SCAN)
     parser_scan.add_argument(
         "template",
@@ -65,7 +65,7 @@ def parse_argument():
         help=msg.HELP_SCAN_OUTPUT,
     )
 
-    # run
+    # Run
     parser_run = subparsers.add_parser("run", help=msg.HELP_RUN)
     parser_run.add_argument(
         "template",
@@ -84,7 +84,7 @@ def parse_argument():
         help=msg.HELP_RUN_OUTPUT,
     )
 
-    # job
+    # Job
     parser_job = subparsers.add_parser("job", help=msg.HELP_JOB)
     parser_job.add_argument(
         "config",
@@ -130,7 +130,6 @@ def configure():
         else:
             conf.IO_OUTFILE = None
             conf.LOG_CONSOLE = False
-
 
     # Run
     elif args.djist_mode == "run":

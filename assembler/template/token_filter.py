@@ -439,7 +439,7 @@ def filesizeformat_filter(value: str or int or float, argument: list) -> str:
 
 
 def first_filter(value: list or str, argument: list):
-    """first - Returns the first item in a list
+    """first - Returns the first item in a list or first character in a string
 
     Arguments:
         value (str, list) - value(s) to be filtered
@@ -450,8 +450,11 @@ def first_filter(value: list or str, argument: list):
         {{ listdata|first }}
     """
     del argument
-    if isinstance(value, (list, str)) and len(value) > 0:
-        return value[0]
+    if isinstance(value, (list, str)):
+        if len(value) > 0:
+            return value[0]
+        logging.warning(msg.FILTER_VALUE_EMPTY_WARNING, "first")
+        return None
     logging.warning(msg.FILTER_VALUE_TYPE_WARNING, "first", core.types(value))
     return None
 

@@ -47,6 +47,7 @@ FILTER_GENERAL = "Could not be applied: %s"
 FILTER_DEFAULT_TYPE_WARNING = "%s filter: Expected type (%s) but found (%s)"
 FILTER_DEFAULT_VALUE_INFO = "%s filter: Default value (%s) was used (argument %s)"
 FILTER_VALUE_TYPE_WARNING = "%s filter: Unexpected value type (%s)"
+FILTER_VALUE_EMPTY_WARNING = "%s filter: Unexpected empty value."
 
 FILTER_DICTSORT_ERROR = (
     "dictsort filter: Could not be applied. Key (%s) was not found in all list items"
