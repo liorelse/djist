@@ -2,7 +2,7 @@
 """Djist: Job from config file
 """
 __author__ = "llelse"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __license__ = "GPLv3"
 
 
@@ -22,11 +22,13 @@ class Job:
     def run(self):
         logging.debug("start job")
         for site in self.sites:
+            # Check for djist_enabled: true
             if isinstance(site, str):
                 site = file.json_to_dict(site)
             site_config = {**self.config, **site}
             pages = site_config.pop("djist_pages")
             for page in pages:
+                # Check for djist_enabled: true
                 if isinstance(page, str):
                     page = file.json_to_dict(page)
                 page_config = {**site_config, **page}

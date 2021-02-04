@@ -3,7 +3,7 @@
 """Djist: Built-in string filters
 """
 __author__ = "llelse"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __license__ = "GPLv3"
 
 
