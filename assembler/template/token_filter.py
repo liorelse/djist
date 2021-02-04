@@ -886,6 +886,65 @@ def urlizetrunc_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
+def where_filter(value: list, argument: list) -> dict:
+    """where - Returns only the first object from an array of objects if a value in the
+    object matches a given value.
+
+    Arguments:
+        value (str, list) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str) - name of the value in the object <"">
+            2 (str, int, float, dict, list, bool) - value to check against <None>
+
+    Example:
+        {% use products|where:"id":product_code as product %}
+    """
+    args = resolve_arguments("where", argument)
+    matched_item = None
+    if isinstance(value, list) and args[0]:
+        proc = processor.Processor(-1)
+        for item in value:
+            proc.update_dataset(item)
+            check_key = proc.get_data("any", args[0])
+            if check_key:
+                check_value = type(check_key)(args[1])
+                if check_key == check_value:
+                    matched_item = item
+                    break
+    return matched_item
+
+
+def whereall_filter(value: list, argument: list) -> dict:
+    """whereall - Returns an array of objects from the source array of objects if a
+    value in the object matches a given value.
+
+    Arguments:
+        value (str, list) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str) - name of the value in the object <"">
+            2 (str, int, float, dict, list, bool) - value to check against <None>
+
+    Example:
+        {% use cars|whereall:"color":"red" as red_cars %}
+        {% use toys|whereall:"type":"bear"|whereall:stock:in_stock as new_list %}
+
+        Note: Chain whereall filters to check multiple values
+        {% use products|whereall:"type":3|whereall:"code":465|first as one_item %}
+    """
+    args = resolve_arguments("whereall", argument)
+    matched_list = []
+    if isinstance(value, list) and args[0]:
+        proc = processor.Processor(-1)
+        for item in value:
+            proc.update_dataset(item)
+            check_key = proc.get_data("any", args[0])
+            if check_key:
+                check_value = type(check_key)(args[1])
+                if check_key == check_value:
+                    matched_list.append(item)
+    return matched_list
+
+
 def wordcount_filter(value: str, argument: str) -> str:
     filtered_value = value
     return filtered_value
@@ -963,6 +1022,8 @@ filter_select = {
     "urlencode": urlencode_filter,
     "urlize": urlize_filter,
     "urlizetrunc": urlizetrunc_filter,
+    "where": where_filter,
+    "whereall": whereall_filter,
     "wordcount": wordcount_filter,
     "wordwrap": wordwrap_filter,
     "yesno": yesno_filter,
@@ -1108,6 +1169,16 @@ filter_defaults = {
     "urlencode": ([], [], []),
     "urlize": ([], [], []),
     "urlizetrunc": ([], [], []),
+    "where": (
+        [(str), (str, int, float, dict, list, bool, None)],
+        ["", (None,)],
+        [("",), ()],
+    ),
+    "whereall": (
+        [(str), (str, int, float, dict, list, bool, None)],
+        ["", (None,)],
+        [("",), ()],
+    ),
     "wordcount": ([], [], []),
     "wordwrap": ([], [], []),
     "yesno": ([], [], []),
