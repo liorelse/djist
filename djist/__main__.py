@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 """Djist: Main module
 """
 __author__ = "llelse"
@@ -9,7 +9,7 @@ __license__ = "GPLv3"
 import argparse
 import logging
 from datetime import datetime
-import assembler
+from . import assembler
 
 # import tests
 
@@ -101,6 +101,7 @@ def configure():
     """Configure the run with the parsed argument"""
     args = parse_argument()
     conf = assembler.job.config
+    file = assembler.generics.file
 
     # Log
     conf.LOG_FILE_LEVEL = args.log_level
@@ -140,7 +141,7 @@ def configure():
             conf.IO_OUTFILE = args.output_file
         else:
             filename = f"{conf.IO_TEMPLATE.name}.html"
-            conf.IO_OUTFILE = assembler.generics.file.open_file(filename, "w")
+            conf.IO_OUTFILE = file.open_file(filename, "w")
 
     # Job
     elif args.djist_mode == "job":
@@ -156,6 +157,10 @@ def main():
     assembler.job.assemble.run()
     logging.debug("Run time: %s", datetime.now() - run_time)
     assembler.generics.core.close()
+
+
+def run():
+    main()
 
 
 if __name__ == "__main__":

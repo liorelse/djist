@@ -1,11 +1,13 @@
 { 
-	"djist_job": "Default",
+	"djist_job_name": "Default",
 	"djist_output_job": "output",
 	"djist_sites": [
 		{
+			"djist_site_name": "",
 			"djist_output_site": "default_site",
 			"djist_pages": [
 				{
+					"djist_page_name": "",
 					"djist_output_filename": "default-output.html",
 					"djist_page_template": "data/filtertest.template",
 					"djist_page_dataset": "data/index.data.json"
