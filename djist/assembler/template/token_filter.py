@@ -195,7 +195,8 @@ def center_filter(value: str, argument: list) -> str:
             2 (str) - fill character <' '>
 
     Example:
-        {{ "This Sentence  Has No   Spaces "|cut:" " }}
+        {{ Value|center:"18" }}
+        {{ "Title"|center:"35":"*" }}
     """
     args = resolve_arguments("center", argument)
     argument_width = core.convert_to_int(args[0])
@@ -715,31 +716,64 @@ def linenumbers_filter(value: str or list, argument: list) -> str:
     return filtered_value
 
 
-def ljust_filter(value: str, argument: str) -> str:
-    """[summary]
+def ljust_filter(value: str, argument: list) -> str:
+    """ljust - Left aligns the value in a field of a given width
 
-    Args:
-        value (str): [description]
-        argument (str): [description]
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str, int) - width of the field <'0'>
+            2 (str) - fill character <' '>
 
-    Returns:
-        str: [description]
+    Example:
+        {{ Value|ljust:"18" }}
+        {{ "Title"|ljust:"35":"." }}
     """
-    filtered_value = value
-    return filtered_value
+    args = resolve_arguments("ljust", argument)
+    argument_width = core.convert_to_int(args[0])
+    argument_fillchar = args[1][0]
+    return value.ljust(argument_width, argument_fillchar)
 
 
-def lower_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value.lower()
+def lower_filter(value: str, argument: list) -> str:
+    """lower - Converts a string into all lowercase
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            Argument ignored
+
+    Example:
+        {{ "Mixed Case STRING"|lower }}
+    """
+    del argument
+    if isinstance(value, str):
+        return value.lower()
+    logging.warning(msg.FILTER_VALUE_TYPE_WARNING, "lower", core.types(value))
+    return None
 
 
-def make_list_filter(value: str, argument: str) -> str:
+def make_list_filter(value: str or int, argument: list) -> list:
+    """ljust - Returns the value turned into a list. For a string, it’s a list of
+    characters. For an integer, the argument is cast to a string before creating a list.
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            Argument ignored
+
+    Example:
+        {{ Value|ljust:"18" }}
+        {{ "Title"|ljust:"35":"." }}
+    """
+    del argument
+
     filtered_value = value
     return filtered_value
 
 
 def phone2numeric_filter(value: str, argument: str) -> str:
+    # Low priority
     filtered_value = value
     return filtered_value
 
@@ -768,9 +802,23 @@ def random_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def rjust_filter(value: str, argument: str) -> str:
-    filtered_value = value
-    return filtered_value
+def rjust_filter(value: str, argument: list) -> str:
+    """rjust - Left aligns the value in a field of a given width
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            1 (str, int) - width of the field <'0'>
+            2 (str) - fill character <' '>
+
+    Example:
+        {{ value|rjust:"18" }}
+        {{ page.number|rjust:"35":"." }}
+    """
+    args = resolve_arguments("rjust", argument)
+    argument_width = core.convert_to_int(args[0])
+    argument_fillchar = args[1][0]
+    return value.rjust(argument_width, argument_fillchar)
 
 
 def safe_filter(value: str, argument: str) -> str:
@@ -1139,7 +1187,11 @@ filter_defaults = {
         ["1", "1", "."],
         [("",), ("",), ()],
     ),
-    "ljust": ([], [], []),
+    "ljust": (
+        [(str, int), (str)],
+        ["0", " "],
+        [(), ("",)],
+    ),
     "lower": ([], [], []),
     "make_list": ([], [], []),
     "phone2numeric": ([], [], []),
@@ -1148,7 +1200,11 @@ filter_defaults = {
     "pprint": ([], [], []),
     "pre": ([], [], []),
     "random": ([], [], []),
-    "rjust": ([], [], []),
+    "rjust": (
+        [(str, int), (str)],
+        ["0", " "],
+        [(), ("",)],
+    ),
     "safe": ([], [], []),
     "safeseq": ([], [], []),
     "slice": ([], [], []),
