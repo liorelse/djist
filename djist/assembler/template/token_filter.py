@@ -754,7 +754,7 @@ def lower_filter(value: str, argument: list) -> str:
 
 
 def make_list_filter(value: str or int, argument: list) -> list:
-    """ljust - Returns the value turned into a list. For a string, it’s a list of
+    """make_list - Returns the value turned into a list. For a string, it’s a list of
     characters. For an integer, the argument is cast to a string before creating a list.
 
     Arguments:
@@ -779,6 +779,18 @@ def phone2numeric_filter(value: str, argument: str) -> str:
 
 
 def pluralize_filter(value: str, argument: str) -> str:
+    """pluralize - Returns the value turned into a list. For a string, it’s a list of
+    characters. For an integer, the argument is cast to a string before creating a list.
+
+    Arguments:
+        value (str) - value(s) to be filtered
+        argument (list) - filter arguments <defualt values>
+            Argument ignored
+
+    Example:
+        {{ Value|ljust:"18" }}
+        {{ "Title"|ljust:"35":"." }}
+    """
     filtered_value = value
     return filtered_value
 
