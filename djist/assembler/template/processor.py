@@ -157,6 +157,11 @@ class Processor:
             self.dataset.update(newdata)
             self.dataset_keyset = self.generate_dot_keys(self.get_data("copy"))
 
+    def adjusted_filename(self, filename: str) -> str:
+        if self.key_in_dataset("djist_base_location"):
+            return file.path_join(self.get_data("str", "djist_base_location"), filename)
+        return filename
+
     def apply_filter(
         self, token_value: str or bool, filter_value: str, filter_argument: list
     ) -> str or bool:
@@ -165,7 +170,7 @@ class Processor:
         argument = filter_argument
         if tfilter in tf.filter_select.keys():
             selected_filter = tf.filter_select[tfilter]
-            filtered_value = selected_filter(filtered_value, argument)
+            filtered_value = selected_filter(filtered_value, argument, self)
         return filtered_value
 
     def resolve_filter(self, token, resolved_token) -> str or bool:
@@ -365,18 +370,17 @@ class Processor:
         return ""
 
     def tag_usedataset(self, action: mtag.Action):
-        filename = ""
         dataset_content = {}
-        source_token = action.get_argument()[0]
-        if source_token.is_literal():
-            filename = source_token.get_value()
-        elif source_token.is_name():
-            filename = self.get_data("str", source_token.get_value())
+        arguments = action.get_argument()
+        filename = self.resolve_token(arguments[0])
+        filename = self.adjusted_filename(filename)
         if core.not_empty(filename):
-            # Future: path lookup by keyword
-            # filename = core.locate_path('dataset', filename)
             dataset_content = file.json_to_dict(filename)
-            self.update_dataset(dataset_content)
+            if arguments[1].get_value() == "as":
+                name = arguments[2].get_value()
+                self.update_dataset({name: dataset_content})
+            else:
+                self.update_dataset(dataset_content)
         return ""
 
     def tag_usetemplate(self, action: mtag.Action):
@@ -390,6 +394,7 @@ class Processor:
         if filename:
             # Future: path lookup by keyword
             # filename = core.locate_path('dataset', filename)
+            filename = self.adjusted_filename(filename)
             template_segment = file.file_to_str(filename)
             return self.new_context(template_segment, {}, source="usetemplate")
         return template

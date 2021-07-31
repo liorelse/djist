@@ -28,6 +28,7 @@ def run():
     elif conf.MODE_RUN:
         logging.info("Running standalone template")
         page_config = {
+            "djist_page_name": "Default page name",
             "djist_page_template": conf.IO_TEMPLATE,
             "djist_page_dataset": conf.IO_DATASET,
             "djist_output_filename": conf.IO_OUTFILE,
