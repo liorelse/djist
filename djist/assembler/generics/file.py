@@ -10,54 +10,56 @@ import json
 import logging
 import os
 from io import TextIOWrapper
+from os.path import pathsep
 from . import core, msg
 
 
-def evaluate():
-    # Future replacement for eval()
-    pass
-
-
 def path_exists(path: str):
-    if core.not_none_or_empty(path):
-        return os.path.exists(path)
+    return os.path.exists(path)
+
+
+def path_normalize(path: str):
+    return os.path.realpath(os.path.normpath(path))
 
 
 def path_join(*dirs: str):
-    return os.path.join("", *dirs).replace("\\", "/")
+    return os.path.join("", *dirs)
 
 
 def path_create(path: str):
-    if core.not_none_or_empty(path):
-        if not path_exists(path):
-            path_list = path.split("/")
-            if path_list[-1] == "":
-                del path_list[-1]
-            current = ""
-            for directory in path_list:
-                current = path_join(current, directory)
-                if not path_exists(current):
-                    try:
-                        os.mkdir(current)
-                    except OSError as error:
-                        print(error)  # Future : Log error
+    path = path_normalize(path)
+    if not path_exists(path):
+        drive, path_ = os.path.splitdrive(path)
+        path_list = path_.split(os.sep)
+        while("" in path_list):
+            path_list.remove("")
+        current = ""
+        for directory in path_list:
+            current = path_join(current, directory)
+            full_current = f"{drive}{os.sep}{current}"
+            if not path_exists(full_current):
+                try:
+                    os.mkdir(full_current)
+                except OSError as error:
+                    print(error)  # Future : Log error
 
 
 def write_file(data, filename: str, path: str = "output", outformat: str = ""):
-    if core.not_none_or_empty(data) and core.not_none_or_empty(filename):
-        path_create(path)
-        full_path = path_join(path, filename)
-        try:
-            with open(full_path, "w") as file:
-                if outformat == "json":
-                    json.dump(data, file, indent=4)
-                else:
-                    if isinstance(data, list):
-                        file.writelines(data)
-                    elif isinstance(data, str):
-                        file.write(data)
-        except OSError:
-            pass
+    full_path = path_join(path, filename)
+    full_path = path_normalize(full_path)
+    if not os.path.isfile(full_path):
+        path_create(full_path.rsplit(os.sep, 1)[0])
+    try:
+        with open(full_path, "w") as file:
+            if outformat == "json":
+                json.dump(data, file, indent=4)
+            else:
+                if isinstance(data, list):
+                    file.writelines(data)
+                elif isinstance(data, str):
+                    file.write(data)
+    except OSError as error:
+        print(error)  # Future : Log error
 
 
 def file_to_list(filename):
