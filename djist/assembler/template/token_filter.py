@@ -73,7 +73,7 @@ def resolve_arguments(filter_name: str, argument: list) -> list:
     return return_arguments
 
 
-def add_filter(value: str or int or float, argument: list) -> str or int or float:
+def add_filter(value: str or int or float, argument: list, proc: processor) -> str or int or float:
     """add - Adds the argument to the value
 
     This filter will first try to coerce both values to integers or floats. If
@@ -123,7 +123,7 @@ def add_filter(value: str or int or float, argument: list) -> str or int or floa
         logging.error(msg.GENERAL_ERROR, err)
 
 
-def addslashes_filter(value: str, argument: list) -> str:
+def addslashes_filter(value: str, argument: list, proc: processor) -> str:
     """addslashes - Adds slashes before quotes
 
     Useful for escaping strings in CSV, for example.
@@ -143,7 +143,7 @@ def addslashes_filter(value: str, argument: list) -> str:
     return None
 
 
-def capfirst_filter(value: str, argument: list) -> str:
+def capfirst_filter(value: str, argument: list, proc: processor) -> str:
     """capfirst - Capitalizes the first character of the value
 
     First character is capitalized, while the remaining characters are left
@@ -164,7 +164,7 @@ def capfirst_filter(value: str, argument: list) -> str:
     return None
 
 
-def capitalize_filter(value: str, argument: list) -> str:
+def capitalize_filter(value: str, argument: list, proc: processor) -> str:
     """capitalize - Capitalizes the value
 
     First character is capitalized, and remaining characters are changed to
@@ -185,7 +185,7 @@ def capitalize_filter(value: str, argument: list) -> str:
     return None
 
 
-def center_filter(value: str, argument: list) -> str:
+def center_filter(value: str, argument: list, proc: processor) -> str:
     """center - Centers the value in a field of a given width
 
     Arguments:
@@ -204,7 +204,7 @@ def center_filter(value: str, argument: list) -> str:
     return value.center(argument_width, argument_fillchar)
 
 
-def cut_filter(value: str, argument: list) -> str:
+def cut_filter(value: str, argument: list, proc: processor) -> str:
     """cut - Removes all instances of the argument from the given string
 
     Arguments:
@@ -219,7 +219,7 @@ def cut_filter(value: str, argument: list) -> str:
     return value.replace(args[0], "")
 
 
-def date_filter(value: str, argument: list) -> str:
+def date_filter(value: str, argument: list, proc: processor) -> str:
     """date - Formats a date according to the given format
 
     Default format is Django/PHP style directives. Standard Python (strftime)
@@ -281,7 +281,7 @@ def default_if_none_filter(value, argument: list):
     return value
 
 
-def dictsort_filter(value: list, argument: list) -> list:
+def dictsort_filter(value: list, argument: list, proc: processor) -> list:
     """dictsort - Takes a list of dictionaries and returns that list sorted by
     the key given in the argument
 
@@ -327,7 +327,7 @@ def dictsort_filter(value: list, argument: list) -> list:
     return None
 
 
-def dictsortreversed_filter(value: list, argument: list) -> list:
+def dictsortreversed_filter(value: list, argument: list, proc: processor) -> list:
     """dictsortreversed - Takes a list of dictionaries and returns that list
     sorted in reverse order by the key given in the argument
 
@@ -346,7 +346,7 @@ def dictsortreversed_filter(value: list, argument: list) -> list:
     return dictsort_filter(value, argument)
 
 
-def divisibleby_filter(value: str or int or float, argument: list) -> bool:
+def divisibleby_filter(value: str or int or float, argument: list, proc: processor) -> bool:
     """divisibleby - Returns True if the value is divisible by the argument
 
     Arguments:
@@ -369,7 +369,7 @@ def divisibleby_filter(value: str or int or float, argument: list) -> bool:
     return None
 
 
-def escape_filter(value: str, argument: list) -> str:
+def escape_filter(value: str, argument: list, proc: processor) -> str:
     """escape - Escapes a string’s HTML
 
     Arguments:
@@ -389,7 +389,7 @@ def escape_filter(value: str, argument: list) -> str:
     return None
 
 
-def escapejs_filter(value: str, argument: list) -> str:
+def escapejs_filter(value: str, argument: list, proc: processor) -> str:
     """escapejs - Escapes characters for use in JavaScript strings
 
     This does not make the string safe for use in HTML or JavaScript template
@@ -413,7 +413,7 @@ def escapejs_filter(value: str, argument: list) -> str:
     return None
 
 
-def filesizeformat_filter(value: str or int or float, argument: list) -> str:
+def filesizeformat_filter(value: str or int or float, argument: list, proc: processor) -> str:
     """filesizeformat - Formats the value to a ‘human-readable’ file size
 
     Arguments:
@@ -460,7 +460,7 @@ def first_filter(value: list or str, argument: list):
     return None
 
 
-def floatformat_filter(value: float or str, argument: list) -> str:
+def floatformat_filter(value: float or str, argument: list, proc: processor) -> str:
     """floatformat -  rounds a floating-point number to the given decimal place
 
     When used without an argument, rounds a floating-point number to one
@@ -497,14 +497,14 @@ def floatformat_filter(value: float or str, argument: list) -> str:
     return str(filtered_value)
 
 
-def force_escape_filter(value: str, argument: str) -> str:
+def force_escape_filter(value: str, argument: str, proc: processor) -> str:
     # Return to this filter with autoescape tag
     # Low priority
     filtered_value = value
     return filtered_value
 
 
-def get_digit_filter(value: int or str, argument: list) -> int:
+def get_digit_filter(value: int or str, argument: list, proc: processor) -> int:
     """get_digit - Given a whole number, returns the requested digit
 
     Digits are counted from right to left, starting with 1. Returns an integer.
@@ -531,14 +531,14 @@ def get_digit_filter(value: int or str, argument: list) -> int:
     return None
 
 
-def iriencode_filter(value: str, argument: str) -> str:
+def iriencode_filter(value: str, argument: str, proc: processor) -> str:
     # Low priority
     """iriencode -"""
     filtered_value = value
     return filtered_value
 
 
-def join_filter(value: list or str, argument: list) -> str:
+def join_filter(value: list or str, argument: list, proc: processor) -> str:
     """join - Joins a list (or split string) with a specified string
 
     If the value is a string, a split character must be specified
@@ -564,7 +564,7 @@ def join_filter(value: list or str, argument: list) -> str:
     return None
 
 
-def json_script_filter(value: str, argument: str) -> str:
+def json_script_filter(value: str, argument: str, proc: processor) -> str:
     # Low priority
     filtered_value = value
     return filtered_value
@@ -588,7 +588,7 @@ def last_filter(value: list, argument: list):
     return None
 
 
-def length_filter(value: str or list or dict, argument: list) -> int:
+def length_filter(value: str or list or dict, argument: list, proc: processor) -> int:
     """length - Returns the length of the value
 
     This works for both strings and lists
@@ -610,7 +610,7 @@ def length_filter(value: str or list or dict, argument: list) -> int:
     return None
 
 
-def length_is_filter(value: str or list or dict, argument: list) -> bool:
+def length_is_filter(value: str or list or dict, argument: list, proc: processor) -> bool:
     """length_is - Checks if the length of an object matches a supplied number
 
     Arguments:
@@ -632,7 +632,7 @@ def length_is_filter(value: str or list or dict, argument: list) -> bool:
     return False
 
 
-def linebreaks_filter(value: str, argument: list) -> str:
+def linebreaks_filter(value: str, argument: list, proc: processor) -> str:
     """linebreaks - Replaces line breaks in plain text with appropriate HTML
 
     A single newline becomes an HTML line break (<br>) and a double new line
@@ -662,7 +662,7 @@ def linebreaks_filter(value: str, argument: list) -> str:
     return filtered_value
 
 
-def linebreaksbr_filter(value: str, argument: list) -> str:
+def linebreaksbr_filter(value: str, argument: list, proc: processor) -> str:
     """linebreaksbr - Converts all newlines to HTML line breaks (<br>)
 
     Arguments:
@@ -683,7 +683,7 @@ def linebreaksbr_filter(value: str, argument: list) -> str:
     return filtered_value
 
 
-def linenumbers_filter(value: str or list, argument: list) -> str:
+def linenumbers_filter(value: str or list, argument: list, proc: processor) -> str:
     """linenumbers - Displays text with line numbers
 
     Arguments:
@@ -716,7 +716,7 @@ def linenumbers_filter(value: str or list, argument: list) -> str:
     return filtered_value
 
 
-def ljust_filter(value: str, argument: list) -> str:
+def ljust_filter(value: str, argument: list, proc: processor) -> str:
     """ljust - Left aligns the value in a field of a given width
 
     Arguments:
@@ -735,7 +735,7 @@ def ljust_filter(value: str, argument: list) -> str:
     return value.ljust(argument_width, argument_fillchar)
 
 
-def lower_filter(value: str, argument: list) -> str:
+def lower_filter(value: str, argument: list, proc: processor) -> str:
     """lower - Converts a string into all lowercase
 
     Arguments:
@@ -753,7 +753,7 @@ def lower_filter(value: str, argument: list) -> str:
     return None
 
 
-def make_list_filter(value: str or int, argument: list) -> list:
+def make_list_filter(value: str or int, argument: list, proc: processor) -> list:
     """make_list - Returns the value turned into a list. For a string, it’s a list of
     characters. For an integer, the argument is cast to a string before creating a list.
 
@@ -772,13 +772,13 @@ def make_list_filter(value: str or int, argument: list) -> list:
     return filtered_value
 
 
-def phone2numeric_filter(value: str, argument: str) -> str:
+def phone2numeric_filter(value: str, argument: str, proc: processor) -> str:
     # Low priority
     filtered_value = value
     return filtered_value
 
 
-def pluralize_filter(value: str, argument: str) -> str:
+def pluralize_filter(value: str, argument: str, proc: processor) -> str:
     """pluralize - Returns the value turned into a list. For a string, it’s a list of
     characters. For an integer, the argument is cast to a string before creating a list.
 
@@ -795,26 +795,26 @@ def pluralize_filter(value: str, argument: str) -> str:
     return filtered_value
 
 
-def post_filter(value: str, argument: str) -> str:
+def post_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value + argument
 
 
-def pprint_filter(value: str, argument: str) -> str:
+def pprint_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def pre_filter(value: str, argument: str) -> str:
-    return argument + value
+def pre_filter(value: str, argument: str, proc: processor) -> str:
+    return argument[0] + value
 
 
-def random_filter(value: str, argument: str) -> str:
+def random_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def rjust_filter(value: str, argument: list) -> str:
+def rjust_filter(value: str, argument: list, proc: processor) -> str:
     """rjust - Left aligns the value in a field of a given width
 
     Arguments:
@@ -833,77 +833,77 @@ def rjust_filter(value: str, argument: list) -> str:
     return value.rjust(argument_width, argument_fillchar)
 
 
-def safe_filter(value: str, argument: str) -> str:
+def safe_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def safeseq_filter(value: str, argument: str) -> str:
+def safeseq_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def slice_filter(value: str, argument: str) -> str:
+def slice_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def slugify_filter(value: str, argument: str) -> str:
+def slugify_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def stringformat_filter(value: str, argument: str) -> str:
+def stringformat_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def striptags_filter(value: str, argument: str) -> str:
+def striptags_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def time_filter(value: str, argument: str) -> str:
+def time_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def timesince_filter(value: str, argument: str) -> str:
+def timesince_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def timeuntil_filter(value: str, argument: str) -> str:
+def timeuntil_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def title_filter(value: str, argument: str) -> str:
+def title_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def truncatechars_filter(value: str, argument: str) -> str:
+def truncatechars_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def truncatechars_html_filter(value: str, argument: str) -> str:
+def truncatechars_html_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def truncatewords_filter(value: str, argument: str) -> str:
+def truncatewords_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def truncatewords_html_filter(value: str, argument: str) -> str:
+def truncatewords_html_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def unescape_filter(value: str, argument: list) -> str:
+def unescape_filter(value: str, argument: list, proc: processor) -> str:
     """unescape - Unescapes an escaped HTML string
 
     Arguments:
@@ -921,32 +921,32 @@ def unescape_filter(value: str, argument: list) -> str:
     return None
 
 
-def unordered_list_filter(value: str, argument: str) -> str:
+def unordered_list_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def upper_filter(value: str, argument: str) -> str:
+def upper_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def urlencode_filter(value: str, argument: str) -> str:
+def urlencode_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def urlize_filter(value: str, argument: str) -> str:
+def urlize_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def urlizetrunc_filter(value: str, argument: str) -> str:
+def urlizetrunc_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def where_filter(value: list, argument: list) -> dict:
+def where_filter(value: list, argument: list, proc: processor) -> dict:
     """where - Returns only the first object from an array of objects if a value in the
     object matches a given value.
 
@@ -962,19 +962,20 @@ def where_filter(value: list, argument: list) -> dict:
     args = resolve_arguments("where", argument)
     matched_item = None
     if isinstance(value, list) and args[0]:
-        proc = processor.Processor(-1)
+        nproc = processor.Processor(proc.context_level + 1)
         for item in value:
-            proc.update_dataset(item)
-            check_key = proc.get_data("any", args[0])
+            nproc.update_dataset(item)
+            check_key = nproc.get_data("any", args[0])
             if check_key:
                 check_value = type(check_key)(args[1])
+                check_value = proc.get_data("any", check_value)
                 if check_key == check_value:
                     matched_item = item
                     break
     return matched_item
 
 
-def whereall_filter(value: list, argument: list) -> dict:
+def whereall_filter(value: list, argument: list, proc: processor) -> dict:
     """whereall - Returns an array of objects from the source array of objects if a
     value in the object matches a given value.
 
@@ -994,28 +995,29 @@ def whereall_filter(value: list, argument: list) -> dict:
     args = resolve_arguments("whereall", argument)
     matched_list = []
     if isinstance(value, list) and args[0]:
-        proc = processor.Processor(-1)
+        nproc = processor.Processor(proc.context_level + 1)
         for item in value:
-            proc.update_dataset(item)
-            check_key = proc.get_data("any", args[0])
+            nproc.update_dataset(item)
+            check_key = nproc.get_data("any", args[0])
             if check_key:
                 check_value = type(check_key)(args[1])
+                check_value = proc.get_data("any", check_value)
                 if check_key == check_value:
                     matched_list.append(item)
     return matched_list
 
 
-def wordcount_filter(value: str, argument: str) -> str:
+def wordcount_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def wordwrap_filter(value: str, argument: str) -> str:
+def wordwrap_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
 
-def yesno_filter(value: str, argument: str) -> str:
+def yesno_filter(value: str, argument: str, proc: processor) -> str:
     filtered_value = value
     return filtered_value
 
